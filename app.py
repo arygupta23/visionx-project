@@ -184,7 +184,7 @@ def find_ui_file(filename: str):
 
 @app.route("/", methods=["GET"])
 def index():
-    dirpath, fname = find_ui_file("landing-page.html")
+    dirpath, fname = find_ui_file("landing.html")
     if dirpath:
         app.logger.info("Serving landing page from %s", dirpath)
         return send_from_directory(dirpath, fname)
@@ -196,10 +196,14 @@ def ui_page(page):
     Serve simple UI HTML files shipped in the repository.
     """
     mapping = {
-        "landing": "landing-page.html",
-        "reports": "report-page.html",
-        "dashboard": "dashbord-page.html",
-        "history": "history-page.html"
+        "landing": "landing.html",
+        "reports": "report.html",
+        "dashboard": "dashboard.html",
+        "history": "history.html",
+        "scan": "scan.html",
+        "settings": "settings.html",
+        "access": "access.html",
+        "home": "home.html"
     }
     fname = mapping.get(page)
     if not fname:

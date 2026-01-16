@@ -1,14 +1,21 @@
 ﻿<!DOCTYPE html>
 
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Scan Audit History | VisionX</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Scan Audit History | VisionX</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
@@ -36,329 +43,385 @@
             },
         }
     </script>
-<style>
+    <style>
         .cyber-border-glow:focus-within {
             box-shadow: 0 0 10px rgba(25, 195, 230, 0.3);
             border-color: #19c3e6;
         }
+
         .status-chip {
             letter-spacing: 0.05em;
             font-size: 10px;
         }
+
         ::-webkit-scrollbar {
             width: 6px;
         }
+
         ::-webkit-scrollbar-track {
             background: #111e21;
         }
+
         ::-webkit-scrollbar-thumb {
             background: #293638;
             border-radius: 10px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background: #19c3e6;
         }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white min-h-screen flex flex-col">
-<!-- Top Navigation -->
-<header class="flex items-center justify-between border-b border-solid border-border-dark px-6 py-3 bg-background-light dark:bg-background-dark sticky top-0 z-50">
-<div class="flex items-center gap-12">
-<div class="flex items-center gap-3">
-<div class="text-primary">
-<span class="material-symbols-outlined text-3xl">shield_locked</span>
-</div>
-<h2 class="text-white text-xl font-bold leading-tight tracking-tight">VisionX</h2>
-</div>
-<nav class="hidden lg:flex items-center gap-8">
-<a class="text-[#9db4b8] hover:text-primary text-sm font-medium transition-colors" href="#">Dashboard</a>
-<a class="text-[#9db4b8] hover:text-primary text-sm font-medium transition-colors" href="#">Live Monitor</a>
-<a class="text-white border-b-2 border-primary py-1 text-sm font-bold" href="#">Scan History</a>
-<a class="text-[#9db4b8] hover:text-primary text-sm font-medium transition-colors" href="#">Threat Intel</a>
-<a class="text-[#9db4b8] hover:text-primary text-sm font-medium transition-colors" href="#">Settings</a>
-</nav>
-</div>
-<div class="flex items-center gap-6">
-<div class="relative group">
-<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#9db4b8]">
-<span class="material-symbols-outlined text-sm">search</span>
-</div>
-<input class="bg-surface-dark border-border-dark text-white text-sm rounded-lg focus:ring-primary focus:border-primary block w-64 pl-10 p-2 cyber-border-glow transition-all" placeholder="Search audit logs..." type="text"/>
-</div>
-<div class="flex items-center gap-3 border-l border-border-dark pl-6">
-<div class="text-right hidden sm:block">
-<p class="text-xs text-white font-bold">Admin_User</p>
-<p class="text-[10px] text-primary uppercase tracking-widest">Operator v4.2</p>
-</div>
-<div class="size-9 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center overflow-hidden">
-<img class="w-full h-full object-cover" data-alt="User avatar placeholder" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChNM-d-KMmv0r1eLMaD4xZnVjYgbxAoja-heHhNmhkKHHxU7kCWf8a62iuURxxfDiCox-l2SauRm_6uc2JzzU3PTdTdwFSy4aFSBeemR0POpKiesNOOxAftM9EMAtdL60G49kofjObkg-tMkPPZcH6QdWEtXgDlUtluOyzHpPbvRbmbK2NauTUGowR6WZwPAykwF4Hh3YhRFyku9ziROzOEMaXUS0iE9CrJySBTEZjFEUlWDw6oxPrOH2bgsf8Fv_V3Rwi-UcGLG8"/>
-</div>
-</div>
-</div>
-</header>
-<main class="flex-1 flex flex-col max-w-[1400px] mx-auto w-full px-6 py-8">
-<!-- Page Heading Section -->
-<div class="flex flex-wrap items-end justify-between gap-6 mb-8">
-<div class="flex flex-col gap-1">
-<div class="flex items-center gap-2 mb-1">
-<span class="text-primary text-xs font-bold tracking-[0.2em] uppercase">Security Module</span>
-<div class="h-[1px] w-8 bg-primary/30"></div>
-</div>
-<h1 class="text-white text-5xl font-black leading-none tracking-tighter uppercase">Scan Audit History</h1>
-<p class="text-[#9db4b8] text-sm font-normal mt-2">
-                    System Node: <span class="text-primary/80">VX-OS-NORTH-01</span>  |  
-                    Active Records: <span class="text-white font-bold">1,240 Total</span>  |  
-                    Filters: <span class="text-white font-bold">NONE</span>
-</p>
-</div>
-<div class="flex gap-3">
-<button class="flex items-center gap-2 h-11 px-6 rounded-lg bg-surface-dark border border-border-dark text-white text-xs font-bold uppercase tracking-widest hover:bg-border-dark transition-all">
-<span class="material-symbols-outlined text-lg">filter_alt</span>
-                    Advanced Filters
-                </button>
-<button class="flex items-center gap-2 h-11 px-6 rounded-lg bg-primary text-background-dark text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all">
-<span class="material-symbols-outlined text-lg">download</span>
-                    Export Audit Logs
-                </button>
-</div>
-</div>
-<!-- Filter Tabs -->
-<div class="mb-6 flex border-b border-border-dark overflow-x-auto scrollbar-hide">
-<a class="group relative flex items-center gap-2 px-8 py-4 border-b-2 border-primary text-white" href="#">
-<span class="material-symbols-outlined text-lg text-primary">analytics</span>
-<span class="text-sm font-bold tracking-wider uppercase">All Scans</span>
-</a>
-<a class="group relative flex items-center gap-2 px-8 py-4 border-b-2 border-transparent text-[#9db4b8] hover:text-white transition-all" href="#">
-<span class="material-symbols-outlined text-lg">link</span>
-<span class="text-sm font-bold tracking-wider uppercase">URLs</span>
-</a>
-<a class="group relative flex items-center gap-2 px-8 py-4 border-b-2 border-transparent text-[#9db4b8] hover:text-white transition-all" href="#">
-<span class="material-symbols-outlined text-lg">description</span>
-<span class="text-sm font-bold tracking-wider uppercase">Files</span>
-</a>
-<a class="group relative flex items-center gap-2 px-8 py-4 border-b-2 border-transparent text-[#9db4b8] hover:text-white transition-all" href="#">
-<span class="material-symbols-outlined text-lg">mail</span>
-<span class="text-sm font-bold tracking-wider uppercase">Emails</span>
-</a>
-</div>
-<!-- High-Density Data Table -->
-<div class="flex-1 min-h-0 @container">
-<div class="h-full overflow-hidden rounded-xl border border-border-dark bg-[#111e21] flex flex-col">
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-surface-dark/50 border-b border-border-dark">
-<th class="px-6 py-4 text-xs font-black text-[#9db4b8] uppercase tracking-[0.2em] w-20">Type</th>
-<th class="px-6 py-4 text-xs font-black text-[#9db4b8] uppercase tracking-[0.2em]">Target Entity</th>
-<th class="px-6 py-4 text-xs font-black text-[#9db4b8] uppercase tracking-[0.2em] w-32">Risk Score</th>
-<th class="px-6 py-4 text-xs font-black text-[#9db4b8] uppercase tracking-[0.2em] w-40">Security Status</th>
-<th class="px-6 py-4 text-xs font-black text-[#9db4b8] uppercase tracking-[0.2em] w-52">Scan Date</th>
-<th class="px-6 py-4 text-xs font-black text-[#9db4b8] uppercase tracking-[0.2em] w-48 text-right">Actions</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-border-dark">
-<!-- Row 1: Dangerous URL -->
-<tr class="hover:bg-primary/5 transition-colors group">
-<td class="px-6 py-5">
-<div class="size-10 rounded bg-danger/10 border border-danger/30 flex items-center justify-center text-danger">
-<span class="material-symbols-outlined">link</span>
-</div>
-</td>
-<td class="px-6 py-5">
-<div class="flex flex-col">
-<span class="text-white text-sm font-medium font-mono">https://secure-login-verify.top/auth/session</span>
-<span class="text-[10px] text-[#9db4b8] uppercase mt-1">Source: Internal Relay</span>
-</div>
-</td>
-<td class="px-6 py-5">
-<div class="flex items-center gap-2">
-<span class="text-danger text-lg font-black italic">88</span>
-<div class="flex-1 h-1 bg-border-dark rounded-full overflow-hidden w-12">
-<div class="bg-danger h-full w-[88%]"></div>
-</div>
-</div>
-</td>
-<td class="px-6 py-5">
-<span class="status-chip inline-flex items-center px-3 py-1 rounded bg-danger/10 border border-danger/40 text-danger font-black uppercase">
-<span class="size-1.5 rounded-full bg-danger mr-2 animate-pulse"></span>
-                                        Dangerous
-                                    </span>
-</td>
-<td class="px-6 py-5 text-[#9db4b8] text-xs font-medium uppercase tracking-wider">
-                                    Oct 24, 2023 <br/> 14:02:11 UTC
-                                </td>
-<td class="px-6 py-5 text-right">
-<div class="flex justify-end gap-2">
-<button class="p-2 rounded bg-surface-dark border border-border-dark text-[#9db4b8] hover:text-primary hover:border-primary transition-all" title="Re-scan">
-<span class="material-symbols-outlined text-lg">refresh</span>
-</button>
-<button class="p-2 rounded bg-surface-dark border border-border-dark text-[#9db4b8] hover:text-danger hover:border-danger transition-all" title="Report">
-<span class="material-symbols-outlined text-lg">flag</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Row 2: Dangerous File -->
-<tr class="hover:bg-primary/5 transition-colors group">
-<td class="px-6 py-5">
-<div class="size-10 rounded bg-danger/10 border border-danger/30 flex items-center justify-center text-danger">
-<span class="material-symbols-outlined">terminal</span>
-</div>
-</td>
-<td class="px-6 py-5">
-<div class="flex flex-col">
-<span class="text-white text-sm font-medium font-mono tracking-tight">invoice_992.pdf.exe</span>
-<span class="text-[10px] text-[#9db4b8] uppercase mt-1">MD5: 4c6a...b921</span>
-</div>
-</td>
-<td class="px-6 py-5">
-<div class="flex items-center gap-2">
-<span class="text-danger text-lg font-black italic">92</span>
-<div class="flex-1 h-1 bg-border-dark rounded-full overflow-hidden w-12">
-<div class="bg-danger h-full w-[92%]"></div>
-</div>
-</div>
-</td>
-<td class="px-6 py-5">
-<span class="status-chip inline-flex items-center px-3 py-1 rounded bg-danger/10 border border-danger/40 text-danger font-black uppercase">
-<span class="size-1.5 rounded-full bg-danger mr-2 animate-pulse"></span>
-                                        Dangerous
-                                    </span>
-</td>
-<td class="px-6 py-5 text-[#9db4b8] text-xs font-medium uppercase tracking-wider">
-                                    Oct 24, 2023 <br/> 13:45:04 UTC
-                                </td>
-<td class="px-6 py-5 text-right">
-<div class="flex justify-end gap-2">
-<button class="p-2 rounded bg-surface-dark border border-border-dark text-[#9db4b8] hover:text-primary hover:border-primary transition-all" title="Re-scan">
-<span class="material-symbols-outlined text-lg">refresh</span>
-</button>
-<button class="p-2 rounded bg-surface-dark border border-border-dark text-[#9db4b8] hover:text-danger hover:border-danger transition-all" title="Report">
-<span class="material-symbols-outlined text-lg">flag</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Row 3: Safe Email -->
-<tr class="hover:bg-primary/5 transition-colors group">
-<td class="px-6 py-5">
-<div class="size-10 rounded bg-success/10 border border-success/30 flex items-center justify-center text-success">
-<span class="material-symbols-outlined">mail</span>
-</div>
-</td>
-<td class="px-6 py-5">
-<div class="flex flex-col">
-<span class="text-white text-sm font-medium font-mono">support@legit-bank.com</span>
-<span class="text-[10px] text-[#9db4b8] uppercase mt-1">Verified Sender (SPF/DKIM)</span>
-</div>
-</td>
-<td class="px-6 py-5">
-<div class="flex items-center gap-2">
-<span class="text-success text-lg font-black italic">12</span>
-<div class="flex-1 h-1 bg-border-dark rounded-full overflow-hidden w-12">
-<div class="bg-success h-full w-[12%]"></div>
-</div>
-</div>
-</td>
-<td class="px-6 py-5">
-<span class="status-chip inline-flex items-center px-3 py-1 rounded bg-success/10 border border-success/40 text-success font-black uppercase">
-<span class="size-1.5 rounded-full bg-success mr-2"></span>
-                                        Safe
-                                    </span>
-</td>
-<td class="px-6 py-5 text-[#9db4b8] text-xs font-medium uppercase tracking-wider">
-                                    Oct 24, 2023 <br/> 12:10:55 UTC
-                                </td>
-<td class="px-6 py-5 text-right">
-<div class="flex justify-end gap-2">
-<button class="p-2 rounded bg-surface-dark border border-border-dark text-[#9db4b8] hover:text-primary hover:border-primary transition-all" title="Re-scan">
-<span class="material-symbols-outlined text-lg">refresh</span>
-</button>
-<button class="p-2 rounded bg-surface-dark border border-border-dark text-[#9db4b8] hover:text-danger hover:border-danger transition-all" title="Report">
-<span class="material-symbols-outlined text-lg">flag</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Row 4: Suspicious URL -->
-<tr class="hover:bg-primary/5 transition-colors group">
-<td class="px-6 py-5">
-<div class="size-10 rounded bg-warning/10 border border-warning/30 flex items-center justify-center text-warning">
-<span class="material-symbols-outlined">link</span>
-</div>
-</td>
-<td class="px-6 py-5">
-<div class="flex flex-col">
-<span class="text-white text-sm font-medium font-mono">http://tracking-pixel.unverified.io/q?u=1</span>
-<span class="text-[10px] text-[#9db4b8] uppercase mt-1">Flag: Obfuscated Redirect</span>
-</div>
-</td>
-<td class="px-6 py-5">
-<div class="flex items-center gap-2">
-<span class="text-warning text-lg font-black italic">45</span>
-<div class="flex-1 h-1 bg-border-dark rounded-full overflow-hidden w-12">
-<div class="bg-warning h-full w-[45%]"></div>
-</div>
-</div>
-</td>
-<td class="px-6 py-5">
-<span class="status-chip inline-flex items-center px-3 py-1 rounded bg-warning/10 border border-warning/40 text-warning font-black uppercase">
-<span class="size-1.5 rounded-full bg-warning mr-2"></span>
-                                        Suspicious
-                                    </span>
-</td>
-<td class="px-6 py-5 text-[#9db4b8] text-xs font-medium uppercase tracking-wider">
-                                    Oct 24, 2023 <br/> 11:30:19 UTC
-                                </td>
-<td class="px-6 py-5 text-right">
-<div class="flex justify-end gap-2">
-<button class="p-2 rounded bg-surface-dark border border-border-dark text-[#9db4b8] hover:text-primary hover:border-primary transition-all" title="Re-scan">
-<span class="material-symbols-outlined text-lg">refresh</span>
-</button>
-<button class="p-2 rounded bg-surface-dark border border-border-dark text-[#9db4b8] hover:text-danger hover:border-danger transition-all" title="Report">
-<span class="material-symbols-outlined text-lg">flag</span>
-</button>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<!-- Table Footer / Pagination -->
-<div class="mt-auto border-t border-border-dark bg-surface-dark/30 px-6 py-4 flex items-center justify-between">
-<div class="text-[#9db4b8] text-[10px] font-bold uppercase tracking-widest">
-                        Showing 1-4 of 1,240 results
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white min-h-screen flex flex-col">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside
+            class="w-64 flex-shrink-0 bg-background-light dark:bg-background-dark border-r border-slate-200 dark:border-[#3c4f53] flex flex-col justify-between p-4">
+            <div class="flex flex-col gap-8">
+                <div class="flex items-center gap-3 px-2">
+                    <div class="size-10 rounded bg-primary flex items-center justify-center text-background-dark">
+                        <span class="material-symbols-outlined font-bold">shield_with_heart</span>
                     </div>
-<div class="flex items-center gap-2">
-<button class="size-8 rounded border border-border-dark flex items-center justify-center text-white hover:border-primary transition-all">
-<span class="material-symbols-outlined text-sm">chevron_left</span>
-</button>
-<button class="size-8 rounded bg-primary text-background-dark flex items-center justify-center text-xs font-bold">1</button>
-<button class="size-8 rounded border border-border-dark flex items-center justify-center text-[#9db4b8] text-xs font-bold hover:text-white transition-all">2</button>
-<button class="size-8 rounded border border-border-dark flex items-center justify-center text-[#9db4b8] text-xs font-bold hover:text-white transition-all">3</button>
-<span class="text-[#9db4b8] text-xs px-1">...</span>
-<button class="size-8 rounded border border-border-dark flex items-center justify-center text-[#9db4b8] text-xs font-bold hover:text-white transition-all">42</button>
-<button class="size-8 rounded border border-border-dark flex items-center justify-center text-white hover:border-primary transition-all">
-<span class="material-symbols-outlined text-sm">chevron_right</span>
-</button>
-</div>
-</div>
-</div>
-</div>
-<!-- Footnote / System Status -->
-<footer class="mt-8 flex items-center justify-between border-t border-border-dark/50 pt-4 opacity-60">
-<div class="text-[#9db4b8] text-[10px] font-medium tracking-wide">
-                All scans are logged for audit and reporting purposes. VisionX Security Protocol v4.2.0.
+                    <div class="flex flex-col">
+                        <h1 class="text-lg font-bold leading-none tracking-tight">VISIONX</h1>
+                        <p class="text-[10px] text-slate-500 dark:text-primary uppercase tracking-[0.2em] font-bold">
+                            Security Command</p>
+                    </div>
+                </div>
+                <nav class="flex flex-col gap-1">
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/home"><span class="material-symbols-outlined text-[20px]">home</span><span
+                            class="text-sm font-medium">Home</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/dashboard"><span class="material-symbols-outlined text-[20px]">dashboard</span><span
+                            class="text-sm font-medium">Command Center</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/scan"><span class="material-symbols-outlined text-[20px]">add_moderator</span><span
+                            class="text-sm font-medium">New Scan</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/reports"><span class="material-symbols-outlined text-[20px]">radar</span><span
+                            class="text-sm font-medium">Threat Intel</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded bg-primary/10 text-primary border-l-2 border-primary"
+                        href="/ui/history"><span
+                            class="material-symbols-outlined text-[20px] fill-1">history</span><span
+                            class="text-sm font-medium">Scan Archive</span></a>
+                    <div class="h-px bg-slate-200 dark:bg-[#3c4f53] my-2"></div>
+
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/access"><span class="material-symbols-outlined text-[20px]">group</span><span
+                            class="text-sm font-medium">Access Control</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/settings"><span class="material-symbols-outlined text-[20px]">settings</span><span
+                            class="text-sm font-medium">Settings</span></a>
+                </nav>
             </div>
-<div class="flex items-center gap-4 text-[#9db4b8] text-[10px] font-bold uppercase tracking-[0.2em]">
-<div class="flex items-center gap-2">
-<span class="size-1.5 rounded-full bg-success"></span>
-                    System Online
+            <div class="flex flex-col gap-4">
+                <div class="p-3 bg-panel rounded border border-[#3c4f53]">
+                    <p class="text-[10px] text-slate-400 uppercase font-bold mb-2">System Status</p>
+                    <div class="flex items-center gap-2">
+                        <div class="size-2 rounded-full bg-success animate-pulse"></div>
+                        <span class="text-xs font-mono">Node: US-EAST-1 (Active)</span>
+                    </div>
                 </div>
-<div class="flex items-center gap-2">
-                    Last Refresh: 14:15:02
+                <a href="/ui/scan"
+                    class="w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-3 rounded flex items-center justify-center gap-2 transition-all">
+                    <span class="material-symbols-outlined text-sm">add_moderator</span>
+                    <span class="text-xs uppercase tracking-wider">Execute New Scan</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark relative">
+            <!-- Header Bar -->
+            <header
+                class="h-16 border-b border-slate-200 dark:border-[#3c4f53] flex items-center justify-between px-8 bg-background-light/50 dark:bg-background-dark/50 backdrop-blur-md sticky top-0 z-10">
+                <h2 class="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Archive /
+                    Audit Logs</h2>
+                <div class="flex items-center gap-4">
+                    <div class="relative group">
+                        <div
+                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <span class="material-symbols-outlined text-sm">search</span>
+                        </div>
+                        <input
+                            class="bg-slate-100 dark:bg-panel border-none text-xs rounded focus:ring-1 focus:ring-primary w-64 pl-9 py-2 transition-all"
+                            placeholder="Search audit logs..." type="text" />
+                    </div>
+                    <div class="size-8 rounded-full border-2 border-primary p-0.5">
+                        <div class="w-full h-full rounded-full bg-cover bg-center" data-alt="User profile avatar"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuChNM-d-KMmv0r1eLMaD4xZnVjYgbAoja-heHhNmhkKHHxU7kCWf8a62iuURxxfDiCox-l2SauRm_6uc2JzzU3PTdTdwFSy4aFSBeemR0POpKiesNOOxAftM9EMAtdL60G49kofjObkg-tMkPPZcH6QdWEtXgDlUtluOyzHpPbvRbmbK2NauTUGowR6WZwPAykwF4Hh3YhRFyku9ziROzOEMaXUS0iE9CrJySBTEZjFEUlWDw6oxPrOH2bgsf8Fv_V3Rwi-UcGLG8')">
+                        </div>
+                    </div>
                 </div>
-</div>
-</footer>
-</main>
-</body></html>
+            </header>
+
+            <div class="p-8 space-y-6">
+                <!-- Page Heading Section -->
+                <div class="flex flex-wrap items-end justify-between gap-6">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-primary text-xs font-bold tracking-[0.2em] uppercase">Security
+                                Module</span>
+                            <div class="h-[1px] w-8 bg-primary/30"></div>
+                        </div>
+                        <h1
+                            class="text-slate-900 dark:text-white text-3xl font-black leading-none tracking-tighter uppercase">
+                            Scan Audit History</h1>
+                        <p class="text-slate-500 dark:text-[#9db4b8] text-sm font-normal mt-2 font-mono">
+                            System Node: <span class="text-primary/80">VX-OS-NORTH-01</span>  | 
+                            Active Records: <span class="text-slate-900 dark:text-white font-bold">1,240 Total</span>
+                        </p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button
+                            class="flex items-center gap-2 h-10 px-4 rounded bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark text-slate-700 dark:text-white text-xs font-bold uppercase tracking-widest hover:border-slate-300 dark:hover:border-primary transition-all">
+                            <span class="material-symbols-outlined text-lg">filter_alt</span>
+                            Filter
+                        </button>
+                        <button
+                            class="flex items-center gap-2 h-10 px-4 rounded bg-primary text-background-dark text-xs font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all">
+                            <span class="material-symbols-outlined text-lg">download</span>
+                            Export
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="flex border-b border-slate-200 dark:border-border-dark overflow-x-auto scrollbar-hide">
+                    <button onclick="filterScans('all')" id="tab-all"
+                        class="group relative flex items-center gap-2 px-6 py-3 border-b-2 border-primary text-slate-900 dark:text-white transition-all">
+                        <span class="material-symbols-outlined text-lg text-primary">analytics</span>
+                        <span class="text-sm font-bold tracking-wider uppercase">All Scans</span>
+                    </button>
+                    <button onclick="filterScans('url')" id="tab-url"
+                        class="group relative flex items-center gap-2 px-6 py-3 border-b-2 border-transparent text-slate-500 dark:text-[#9db4b8] hover:text-primary transition-all">
+                        <span class="material-symbols-outlined text-lg">link</span>
+                        <span class="text-sm font-bold tracking-wider uppercase">URLs</span>
+                    </button>
+                    <button onclick="filterScans('file')" id="tab-file"
+                        class="group relative flex items-center gap-2 px-6 py-3 border-b-2 border-transparent text-slate-500 dark:text-[#9db4b8] hover:text-primary transition-all">
+                        <span class="material-symbols-outlined text-lg">description</span>
+                        <span class="text-sm font-bold tracking-wider uppercase">Files</span>
+                    </button>
+                    <button onclick="filterScans('email')" id="tab-email"
+                        class="group relative flex items-center gap-2 px-6 py-3 border-b-2 border-transparent text-slate-500 dark:text-[#9db4b8] hover:text-primary transition-all">
+                        <span class="material-symbols-outlined text-lg">mail</span>
+                        <span class="text-sm font-bold tracking-wider uppercase">Emails</span>
+                    </button>
+                </div>
+
+                <!-- High-Density Data Table -->
+                <div
+                    class="rounded-xl border border-slate-200 dark:border-border-dark bg-white dark:bg-[#111e21] flex flex-col overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr
+                                    class="bg-slate-50 dark:bg-surface-dark/50 border-b border-slate-200 dark:border-border-dark">
+                                    <th
+                                        class="px-6 py-4 text-xs font-black text-slate-500 dark:text-[#9db4b8] uppercase tracking-[0.2em] w-20">
+                                        Type</th>
+                                    <th
+                                        class="px-6 py-4 text-xs font-black text-slate-500 dark:text-[#9db4b8] uppercase tracking-[0.2em]">
+                                        Target Entity</th>
+                                    <th
+                                        class="px-6 py-4 text-xs font-black text-slate-500 dark:text-[#9db4b8] uppercase tracking-[0.2em] w-32">
+                                        Risk Score</th>
+                                    <th
+                                        class="px-6 py-4 text-xs font-black text-slate-500 dark:text-[#9db4b8] uppercase tracking-[0.2em] w-40">
+                                        Security Status</th>
+                                    <th
+                                        class="px-6 py-4 text-xs font-black text-slate-500 dark:text-[#9db4b8] uppercase tracking-[0.2em] w-52">
+                                        Scan Date</th>
+                                    <th
+                                        class="px-6 py-4 text-xs font-black text-slate-500 dark:text-[#9db4b8] uppercase tracking-[0.2em] w-48 text-right">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scan-history-body" class="divide-y divide-slate-100 dark:divide-border-dark">
+                                <!-- Loaded via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Table Footer / Pagination -->
+                    <div
+                        class="mt-auto border-t border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-surface-dark/30 px-6 py-4 flex items-center justify-between">
+                        <div class="text-slate-500 dark:text-[#9db4b8] text-[10px] font-bold uppercase tracking-widest">
+                            Showing 1-10 of 1,240 results
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button
+                                class="size-8 rounded border border-slate-200 dark:border-border-dark flex items-center justify-center text-slate-500 dark:text-white hover:border-primary transition-all">
+                                <span class="material-symbols-outlined text-sm">chevron_left</span>
+                            </button>
+                            <button
+                                class="size-8 rounded bg-primary text-background-dark flex items-center justify-center text-xs font-bold">1</button>
+                            <button
+                                class="size-8 rounded border border-slate-200 dark:border-border-dark flex items-center justify-center text-slate-500 dark:text-[#9db4b8] text-xs font-bold hover:text-primary transition-all">2</button>
+                            <button
+                                class="size-8 rounded border border-slate-200 dark:border-border-dark flex items-center justify-center text-slate-500 dark:text-[#9db4b8] text-xs font-bold hover:text-primary transition-all">3</button>
+                            <span class="text-slate-400 text-xs px-1">...</span>
+                            <button
+                                class="size-8 rounded border border-slate-200 dark:border-border-dark flex items-center justify-center text-slate-500 dark:text-white hover:border-primary transition-all">
+                                <span class="material-symbols-outlined text-sm">chevron_right</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footnote / System Status -->
+                <footer class="flex items-center justify-between pt-4 opacity-60">
+                    <div class="text-slate-500 dark:text-[#9db4b8] text-[10px] font-medium tracking-wide">
+                        VisionX Security Protocol v4.2.0.
+                    </div>
+                    <div
+                        class="flex items-center gap-4 text-slate-500 dark:text-[#9db4b8] text-[10px] font-bold uppercase tracking-[0.2em]">
+                        <div class="flex items-center gap-2">
+                            <span class="size-1.5 rounded-full bg-success"></span>
+                            System Online
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </main>
+    </div>
+    <script>
+        let globalHistoryData = [];
+
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("/api/history")
+                .then(res => res.json())
+                .then(data => {
+                    globalHistoryData = data;
+                    // Sort by date desc
+                    globalHistoryData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    renderTable(globalHistoryData);
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById("scan-history-body").innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Failed to load history.</td></tr>`;
+                });
+        });
+
+        function filterScans(type) {
+            // Update Tab UI
+            const tabs = ['all', 'url', 'file', 'email'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === type) {
+                    btn.className = "group relative flex items-center gap-2 px-6 py-3 border-b-2 border-primary text-slate-900 dark:text-white transition-all";
+                    btn.querySelector('span.material-symbols-outlined').classList.add('text-primary');
+                } else {
+                    btn.className = "group relative flex items-center gap-2 px-6 py-3 border-b-2 border-transparent text-slate-500 dark:text-[#9db4b8] hover:text-primary transition-all";
+                    btn.querySelector('span.material-symbols-outlined').classList.remove('text-primary');
+                }
+            });
+
+            // Filter Data
+            if (type === 'all') {
+                renderTable(globalHistoryData);
+            } else {
+                // Ensure case-insensitive matching
+                const filtered = globalHistoryData.filter(item => item.scan_type.toLowerCase() === type);
+                renderTable(filtered);
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById("scan-history-body");
+            tbody.innerHTML = "";
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-slate-500">No records found for this category.</td></tr>`;
+                return;
+            }
+
+            data.forEach(item => {
+                let riskColor = "text-success";
+                let riskBadge = "bg-success/20 text-success border-success/40";
+                let riskIcon = "check_circle";
+
+                if (item.risk_level === 'Dangerous') {
+                    riskColor = "text-danger";
+                    riskBadge = "bg-danger/20 text-danger border-danger/40 animate-pulse";
+                    riskIcon = "warning";
+                } else if (item.risk_level === 'Suspicious') {
+                    riskColor = "text-warning";
+                    riskBadge = "bg-warning/20 text-warning border-warning/40";
+                    riskIcon = "error";
+                }
+
+                const row = `
+                <tr class="row-hover transition-all duration-200">
+                        <td class="px-6 py-4">
+                        <span class="uppercase text-xs font-bold tracking-wider text-slate-500">${item.scan_type}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="font-mono text-sm dark:text-slate-300 truncate block max-w-[200px]" title="${item.target}">${item.target}</span>
+                    </td>
+                        <td class="px-6 py-4">
+                        <div class="flex items-center gap-2">
+                            <div class="h-1.5 w-16 bg-slate-700 rounded-full overflow-hidden">
+                                <div class="h-full ${item.risk_level === 'Dangerous' ? 'bg-danger' : item.risk_level === 'Suspicious' ? 'bg-warning' : 'bg-success'}" style="width: ${item.risk_score}%"></div>
+                            </div>
+                            <span class="text-xs font-mono font-bold ${riskColor}">${item.risk_score}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-bold border uppercase tracking-tighter ${riskBadge}">
+                            <span class="material-symbols-outlined text-[10px] mr-1">${riskIcon}</span>
+                            ${item.risk_level}
+                        </span>
+                    </td>
+                        <td class="px-6 py-4 text-slate-500 text-xs font-mono">
+                        ${new Date(item.created_at).toLocaleString()}
+                    </td>
+                        <td class="px-6 py-4 text-right">
+                        <div class="flex justify-end gap-2">
+                            <button onclick="downloadHistoryItem(${item.id})" class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-surface-dark hover:bg-primary hover:text-background-dark text-slate-700 dark:text-white text-xs font-bold rounded transition-all neo-border">
+                                <span class="material-symbols-outlined text-sm">download</span>
+                                Report
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function downloadHistoryItem(id) {
+            const item = globalHistoryData.find(d => d.id === id);
+            if (!item) return;
+
+            const filename = `VISIONX_REPORT_${item.id}.txt`;
+            let content = `VISIONX ARCHIVED REPORT\n`;
+            content += `Scan ID: ${item.id}\n`;
+            content += `Date: ${item.created_at}\n`;
+            content += `Target: ${item.target}\n`;
+            content += `Risk: ${item.risk_level} (${item.risk_score})\n`;
+            content += `\nDETAILS:\n`;
+            let reasons = [];
+            if (typeof item.reasons === 'string') {
+                try { reasons = JSON.parse(item.reasons); } catch (e) { reasons = [item.reasons]; }
+            } else {
+                reasons = item.reasons || [];
+            }
+            reasons.forEach(r => content += `- ${r}\n`);
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+
+</html>

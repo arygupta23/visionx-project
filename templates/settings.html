@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>VisionX | Settings</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#19c3e6",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#111e21",
+                        "panel": "#1c2526",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased min-h-screen flex">
+
+    <!-- Sidebar (Same as dashboard) -->
+    <aside
+        class="w-64 flex-shrink-0 bg-background-light dark:bg-background-dark border-r border-slate-200 dark:border-[#3c4f53] flex flex-col justify-between p-4">
+        <div class="flex flex-col gap-8">
+            <div class="flex items-center gap-3 px-2">
+                <div class="size-10 rounded bg-primary flex items-center justify-center text-background-dark">
+                    <span class="material-symbols-outlined font-bold">shield_with_heart</span>
+                </div>
+                <div class="flex flex-col">
+                    <h1 class="text-lg font-bold leading-none tracking-tight">VISIONX</h1>
+                </div>
+            </div>
+            <nav class="flex flex-col gap-1">
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                    href="/ui/home"><span class="material-symbols-outlined text-[20px]">home</span><span
+                        class="text-sm font-medium">Home</span></a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                    href="/ui/dashboard"><span class="material-symbols-outlined text-[20px]">dashboard</span><span
+                        class="text-sm font-medium">Command Center</span></a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                    href="/ui/scan"><span class="material-symbols-outlined text-[20px]">add_moderator</span><span
+                        class="text-sm font-medium">New Scan</span></a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                    href="/ui/reports"><span class="material-symbols-outlined text-[20px]">radar</span><span
+                        class="text-sm font-medium">Threat Intel</span></a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                    href="/ui/history"><span class="material-symbols-outlined text-[20px]">history</span><span
+                        class="text-sm font-medium">Archive</span></a>
+                <div class="h-px bg-slate-200 dark:bg-[#3c4f53] my-2"></div>
+
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                    href="/ui/access"><span class="material-symbols-outlined text-[20px]">group</span><span
+                        class="text-sm font-medium">Access Control</span></a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded bg-primary/10 text-primary border-l-2 border-primary"
+                    href="/ui/settings"><span class="material-symbols-outlined text-[20px] fill-1">settings</span><span
+                        class="text-sm font-medium">Settings</span></a>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-8 overflow-y-auto">
+        <header class="mb-8 border-b border-slate-700 pb-4">
+            <h1 class="text-2xl font-bold">System Settings</h1>
+            <p class="text-slate-500">Configure global platform preferences.</p>
+        </header>
+
+        <div class="space-y-8 max-w-2xl">
+            <section class="bg-white dark:bg-panel p-6 rounded border border-slate-200 dark:border-[#3c4f53]">
+                <h3 class="text-lg font-bold mb-4">General Preferences</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Platform Name</label>
+                        <input type="text" value="VisionX Enterprise"
+                            class="w-full bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-[#3c4f53] rounded p-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Timezone</label>
+                        <select
+                            class="w-full bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-[#3c4f53] rounded p-2 text-sm">
+                            <option>UTC (Default)</option>
+                            <option>EST</option>
+                            <option>PST</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white dark:bg-panel p-6 rounded border border-slate-200 dark:border-[#3c4f53]">
+                <h3 class="text-lg font-bold mb-4">Notifications</h3>
+                <div class="space-y-3">
+                    <label class="flex items-center gap-3">
+                        <input type="checkbox" checked
+                            class="form-checkbox text-primary rounded bg-slate-700 border-none">
+                        <span class="text-sm">Email alerts for High Risk scans</span>
+                    </label>
+                    <label class="flex items-center gap-3">
+                        <input type="checkbox" class="form-checkbox text-primary rounded bg-slate-700 border-none">
+                        <span class="text-sm">Weekly digest reports</span>
+                    </label>
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+
+</html>

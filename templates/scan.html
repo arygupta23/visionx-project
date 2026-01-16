@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>VisionX | Execute Scan</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#19c3e6",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#111e21",
+                        "panel": "#1c2526",
+                        "danger": "#fa5f38",
+                        "success": "#0bda54",
+                        "warning": "#ffd733"
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .scan-tab.active {
+            background-color: rgba(25, 195, 230, 0.1);
+            border-color: #19c3e6;
+            color: #19c3e6;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased min-h-screen">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside
+            class="w-64 flex-shrink-0 bg-background-light dark:bg-background-dark border-r border-slate-200 dark:border-[#3c4f53] flex flex-col justify-between p-4">
+            <div class="flex flex-col gap-8">
+                <div class="flex items-center gap-3 px-2">
+                    <div class="size-10 rounded bg-primary flex items-center justify-center text-background-dark">
+                        <span class="material-symbols-outlined font-bold">shield_with_heart</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <h1 class="text-lg font-bold leading-none tracking-tight">VISIONX</h1>
+                        <p class="text-[10px] text-slate-500 dark:text-primary uppercase tracking-[0.2em] font-bold">
+                            Security Command</p>
+                    </div>
+                </div>
+                <nav class="flex flex-col gap-1">
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/home"><span class="material-symbols-outlined text-[20px]">home</span><span
+                            class="text-sm font-medium">Home</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/dashboard"><span class="material-symbols-outlined text-[20px]">dashboard</span><span
+                            class="text-sm font-medium">Command Center</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded bg-primary/10 text-primary border-l-2 border-primary"
+                        href="/ui/scan"><span
+                            class="material-symbols-outlined text-[20px] fill-1">add_moderator</span><span
+                            class="text-sm font-medium">New Scan</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/reports"><span class="material-symbols-outlined text-[20px]">radar</span><span
+                            class="text-sm font-medium">Threat Intel</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/history"><span class="material-symbols-outlined text-[20px]">history</span><span
+                            class="text-sm font-medium">Archive</span></a>
+                    <div class="h-px bg-slate-200 dark:bg-[#3c4f53] my-2"></div>
+
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/access"><span class="material-symbols-outlined text-[20px]">group</span><span
+                            class="text-sm font-medium">Access Control</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/settings"><span class="material-symbols-outlined text-[20px]">settings</span><span
+                            class="text-sm font-medium">Settings</span></a>
+                </nav>
+            </div>
+            <div class="p-3 bg-panel rounded border border-[#3c4f53]">
+                <p class="text-[10px] text-slate-400 uppercase font-bold mb-2">System Status</p>
+                <div class="flex items-center gap-2">
+                    <div class="size-2 rounded-full bg-success animate-pulse"></div>
+                    <span class="text-xs font-mono">Node: US-EAST-1 (Active)</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark relative p-8">
+            <header class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight">Execute New Scan</h2>
+                    <p class="text-slate-500 text-sm">Select a target type to analyze for potential threats.</p>
+                </div>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Scan Input Column -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Tab Selector -->
+                    <div class="flex p-1 bg-white dark:bg-panel rounded border border-slate-200 dark:border-[#3c4f53]">
+                        <button onclick="switchTab('url')" id="tab-url"
+                            class="scan-tab active flex-1 py-2 text-sm font-bold uppercase tracking-wider rounded transition-all">URL
+                            Analysis</button>
+                        <button onclick="switchTab('email')" id="tab-email"
+                            class="scan-tab flex-1 py-2 text-sm font-bold uppercase tracking-wider rounded transition-all">Email
+                            Body</button>
+                        <button onclick="switchTab('file')" id="tab-file"
+                            class="scan-tab flex-1 py-2 text-sm font-bold uppercase tracking-wider rounded transition-all">File
+                            Upload</button>
+                    </div>
+
+                    <!-- URL Form -->
+                    <div id="form-url"
+                        class="bg-white dark:bg-panel p-6 rounded border border-slate-200 dark:border-[#3c4f53]">
+                        <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Target
+                            URL</label>
+                        <input type="text" id="input-url"
+                            class="w-full bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-[#3c4f53] rounded p-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-600"
+                            placeholder="https://example.com/login">
+                        <button onclick="runScan('url')"
+                            class="mt-4 w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-3 rounded flex items-center justify-center gap-2 transition-all">
+                            <span class="material-symbols-outlined">search</span>
+                            Scan URL
+                        </button>
+                    </div>
+
+                    <!-- Email Form -->
+                    <div id="form-email"
+                        class="hidden bg-white dark:bg-panel p-6 rounded border border-slate-200 dark:border-[#3c4f53]">
+                        <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Sender
+                            Address</label>
+                        <input type="email" id="input-email-sender"
+                            class="w-full bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-[#3c4f53] rounded p-3 text-sm mb-4 focus:ring-1 focus:ring-primary focus:border-primary"
+                            placeholder="sender@example.com">
+
+                        <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Email
+                            Content</label>
+                        <textarea id="input-email-content" rows="6"
+                            class="w-full bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-[#3c4f53] rounded p-3 text-sm focus:ring-1 focus:ring-primary focus:border-primary"
+                            placeholder="Paste email body here..."></textarea>
+
+                        <button onclick="runScan('email')"
+                            class="mt-4 w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-3 rounded flex items-center justify-center gap-2 transition-all">
+                            <span class="material-symbols-outlined">mail</span>
+                            Scan Email
+                        </button>
+                    </div>
+
+                    <!-- File Form -->
+                    <div id="form-file"
+                        class="hidden bg-white dark:bg-panel p-6 rounded border border-slate-200 dark:border-[#3c4f53]">
+                        <div class="border-2 border-dashed border-slate-300 dark:border-[#3c4f53] roundedxl p-8 text-center hover:border-primary transition-colors cursor-pointer"
+                            onclick="document.getElementById('input-file').click()">
+                            <span class="material-symbols-outlined text-4xl text-slate-400 mb-2">cloud_upload</span>
+                            <p class="text-sm font-bold">Click to upload or drag and drop</p>
+                            <p class="text-xs text-slate-500 mt-1">Supports .exe, .pdf, .docx, .js (Max 10MB)</p>
+                            <input type="file" id="input-file" class="hidden"
+                                onchange="document.getElementById('file-name').textContent = this.files[0]?.name || ''">
+                        </div>
+                        <p id="file-name" class="text-center text-sm font-mono mt-2 text-primary"></p>
+                        <button onclick="runScan('file')"
+                            class="mt-4 w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-3 rounded flex items-center justify-center gap-2 transition-all">
+                            <span class="material-symbols-outlined">upload_file</span>
+                            Scan File
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Result Column -->
+                <div class="space-y-6">
+                    <div
+                        class="bg-white dark:bg-panel p-6 rounded border border-slate-200 dark:border-[#3c4f53] min-h-[400px] flex flex-col">
+                        <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">analytics</span>
+                            Scan Results
+                        </h3>
+
+                        <div id="result-placeholder"
+                            class="flex-1 flex flex-col items-center justify-center text-slate-500 opacity-50">
+                            <span class="material-symbols-outlined text-6xl mb-2">radar</span>
+                            <p class="text-sm font-bold uppercase tracking-widest">Awaiting Input</p>
+                        </div>
+
+                        <div id="result-content" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4">
+                            <div class="text-center">
+                                <div id="res-score-ring"
+                                    class="relative inline-flex items-center justify-center size-32 rounded-full border-4 border-slate-700 mb-4">
+                                    <span id="res-score" class="text-4xl font-black">--</span>
+                                    <div class="absolute inset-0 border-4 border-primary rounded-full"
+                                        style="clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%); transform: rotate(45deg);">
+                                    </div>
+                                </div>
+                                <div id="res-level" class="text-xl font-black uppercase tracking-widest">---</div>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-sm py-2 border-b border-slate-700">
+                                    <span class="text-slate-500">Scan Type</span>
+                                    <span id="res-type" class="font-mono font-bold">---</span>
+                                </div>
+                                <div class="flex justify-between text-sm py-2 border-b border-slate-700">
+                                    <span class="text-slate-500">Target</span>
+                                    <span id="res-target" class="font-mono truncate max-w-[150px]">---</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900/50 p-4 rounded text-xs font-mono text-slate-400">
+                                <p class="font-bold text-slate-300 mb-2 uppercase">Analysis Reasons:</p>
+                                <ul id="res-reasons" class="list-disc pl-4 space-y-1"></ul>
+                            </div>
+
+                            <button id="btn-download" onclick="downloadReport()"
+                                class="w-full border border-slate-700 hover:border-primary text-slate-400 hover:text-primary font-bold text-xs uppercase py-3 rounded transition-all flex items-center justify-center gap-2 hidden">
+                                <span class="material-symbols-outlined">download</span>
+                                Download Full Audit Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentScanData = null;
+
+        function switchTab(mode) {
+            ['url', 'email', 'file'].forEach(m => {
+                document.getElementById(`form-${m}`).classList.add('hidden');
+                document.getElementById(`tab-${m}`).classList.remove('active');
+            });
+            document.getElementById(`form-${mode}`).classList.remove('hidden');
+            document.getElementById(`tab-${mode}`).classList.add('active');
+            // Hide results and download button when switching tabs
+            document.getElementById('result-placeholder').classList.remove('hidden');
+            document.getElementById('result-content').classList.add('hidden');
+            document.getElementById('btn-download').classList.add('hidden');
+            currentScanData = null; // Clear previous scan data
+        }
+
+        async function runScan(mode) {
+            const resultPlaceholder = document.getElementById('result-placeholder');
+            const resultContent = document.getElementById('result-content');
+            const downloadButton = document.getElementById('btn-download');
+
+            // Show loading state could be added here
+            resultPlaceholder.classList.remove('hidden');
+            resultContent.classList.add('hidden');
+            downloadButton.classList.add('hidden');
+            currentScanData = null; // Clear previous scan data
+
+            let endpoint = '';
+            let body = {};
+            let headers = { 'Content-Type': 'application/json' };
+            let method = 'POST';
+
+            try {
+                if (mode === 'url') {
+                    endpoint = '/api/scan/url';
+                    body = JSON.stringify({ url: document.getElementById('input-url').value });
+                } else if (mode === 'email') {
+                    endpoint = '/api/scan/email';
+                    body = JSON.stringify({
+                        sender: document.getElementById('input-email-sender').value,
+                        content: document.getElementById('input-email-content').value
+                    });
+                } else if (mode === 'file') {
+                    endpoint = '/api/scan/file';
+                    const formData = new FormData();
+                    const fileInput = document.getElementById('input-file');
+                    if (fileInput.files.length === 0) return alert('Please select a file');
+                    formData.append('file', fileInput.files[0]);
+                    body = formData;
+                    headers = {}; // Let browser set content-type for FormData
+                }
+
+                const res = await fetch(endpoint, { method, headers, body });
+                const data = await res.json();
+
+                if (data.error) throw new Error(data.error);
+
+                currentScanData = data; // Store for download
+
+                // Update UI
+                resultPlaceholder.classList.add('hidden');
+                resultContent.classList.remove('hidden');
+                downloadButton.classList.remove('hidden'); // Show download button
+
+                document.getElementById('res-score').textContent = data.risk_score;
+
+                const lvl = document.getElementById('res-level');
+                lvl.textContent = data.risk_level;
+
+                // Color logic
+                const ring = document.getElementById('res-score-ring');
+                ring.className = `relative inline-flex items-center justify-center size-32 rounded-full border-4 mb-4 ${data.risk_level === 'Dangerous' ? 'border-danger/30 text-danger' :
+                    data.risk_level === 'Suspicious' ? 'border-warning/30 text-warning' : 'border-success/30 text-success'
+                    }`;
+
+                document.getElementById('res-type').textContent = data.scan_type;
+                document.getElementById('res-target').textContent = data.target;
+
+                const reasonList = document.getElementById('res-reasons');
+                reasonList.innerHTML = '';
+                // Parse reasons if string, else use as array
+                let reasons = [];
+                if (typeof data.reasons === 'string') {
+                    try { reasons = JSON.parse(data.reasons); } catch (e) { reasons = [data.reasons]; }
+                } else {
+                    reasons = data.reasons || [];
+                }
+
+                if (reasons.length === 0) {
+                    reasonList.innerHTML = '<li>No specific threats detected.</li>';
+                } else {
+                    reasons.forEach(r => {
+                        const li = document.createElement('li');
+                        li.textContent = r;
+                        reasonList.appendChild(li);
+                    });
+                }
+
+            } catch (e) {
+                alert('Scan failed: ' + e.message);
+                downloadButton.classList.add('hidden'); // Hide download button on error
+            }
+        }
+
+        function downloadReport() {
+            if (!currentScanData) return;
+
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const filename = `VISIONX_AUDIT_${currentScanData.scan_type.toUpperCase()}_${timestamp}.txt`;
+
+            let content = `VISIONX SECURITY AUDIT REPORT\n`;
+            content += `=================================================\n`;
+            content += `Scan ID:      ${Math.random().toString(36).substr(2, 9).toUpperCase()}\n`;
+            content += `Timestamp:    ${new Date().toLocaleString()}\n`;
+            content += `Scan Type:    ${currentScanData.scan_type}\n`;
+            content += `Target:       ${currentScanData.target}\n`;
+            content += `Risk Level:   ${currentScanData.risk_level.toUpperCase()}\n`;
+            content += `Risk Score:   ${currentScanData.risk_score}/100\n`;
+            content += `=================================================\n\n`;
+            content += `DETAILED FINDINGS:\n`;
+
+            let reasons = [];
+            if (typeof currentScanData.reasons === 'string') {
+                try { reasons = JSON.parse(currentScanData.reasons); } catch (e) { reasons = [currentScanData.reasons]; }
+            } else {
+                reasons = currentScanData.reasons || [];
+            }
+
+            if (reasons.length === 0) content += `- No specific threats detected.\n`;
+            else reasons.forEach(r => content += `- [WARN] ${r}\n`);
+
+            content += `\n=================================================\n`;
+            content += `Generated by VisionX Security Platform`;
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+
+</html>

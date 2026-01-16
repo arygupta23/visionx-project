@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>VisionX | Home</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#19c3e6",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#111e21",
+                        "panel": "#1c2526",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased min-h-screen flex flex-col items-center justify-between p-6 relative overflow-hidden">
+
+    <!-- Background decorations -->
+    <div class="fixed inset-0 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[120px] rounded-full"></div>
+    </div>
+
+    <!-- Spacer for vertical centering of main content -->
+    <div class="flex-1 flex flex-col items-center justify-center w-full max-w-4xl">
+        <div class="relative z-10 w-full text-center">
+            <div
+                class="inline-flex items-center justify-center size-20 rounded-2xl bg-gradient-to-br from-primary to-blue-600 mb-8 shadow-2xl shadow-primary/20">
+                <span class="material-symbols-outlined text-4xl text-background-dark">shield_lock</span>
+            </div>
+
+            <h1
+                class="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/50">
+                Welcome to VisionX
+            </h1>
+
+            <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-12 font-light">
+                Your unified platform for advanced threat detection, analysis, and security auditing.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left mb-16">
+                <a href="/ui/dashboard"
+                    class="group p-6 rounded-2xl bg-white dark:bg-panel border border-white/5 hover:border-primary/50 transition-all hover:-translate-y-1 hover:shadow-xl cursor-pointer">
+                    <div
+                        class="size-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-background-dark transition-colors text-primary">
+                        <span class="material-symbols-outlined">dashboard</span>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Command Center</h3>
+                    <p class="text-sm text-slate-500 group-hover:text-slate-400">Real-time overview of system health and
+                        scan metrics.</p>
+                </a>
+
+                <a href="/ui/scan"
+                    class="group p-6 rounded-2xl bg-white dark:bg-panel border border-white/5 hover:border-primary/50 transition-all hover:-translate-y-1 hover:shadow-xl cursor-pointer">
+                    <div
+                        class="size-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-background-dark transition-colors text-primary">
+                        <span class="material-symbols-outlined">add_moderator</span>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">New Scan</h3>
+                    <p class="text-sm text-slate-500 group-hover:text-slate-400">Analyze URLs, files, or emails for
+                        potential threats.</p>
+                </a>
+
+                <a href="/ui/history"
+                    class="group p-6 rounded-2xl bg-white dark:bg-panel border border-white/5 hover:border-primary/50 transition-all hover:-translate-y-1 hover:shadow-xl cursor-pointer">
+                    <div
+                        class="size-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-background-dark transition-colors text-primary">
+                        <span class="material-symbols-outlined">history</span>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Archives</h3>
+                    <p class="text-sm text-slate-500 group-hover:text-slate-400">Browse and export historical audit logs
+                        and
+                        reports.</p>
+                </a>
+            </div>
+
+            <!-- About Section -->
+            <div
+                class="bg-white/5 dark:bg-panel/50 backdrop-blur-sm rounded-2xl p-8 border border-white/5 text-left mb-12">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">info</span>
+                    About VisionX Platform
+                </h3>
+                <p class="text-slate-400 mb-4 leading-relaxed">
+                    VisionX is a next-generation cybersecurity dashboard engineered for comprehensive threat management.
+                    It empowers security operations teams by integrating vulnerability scanning, threat intelligence,
+                    and automated reporting into a single, unified interface.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                    <div class="flex flex-col gap-2">
+                        <span class="font-bold text-slate-200">Real-time Detection</span>
+                        <span class="text-slate-500">Instant visibility into active risks and network
+                            vulnerabilities.</span>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <span class="font-bold text-slate-200">Unified Scanning</span>
+                        <span class="text-slate-500">Centralized engine for analyzing URLs, binaries, and email
+                            content.</span>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <span class="font-bold text-slate-200">Intelligent Reporting</span>
+                        <span class="text-slate-500">Automated generation of compliance data and threat
+                            assessments.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center gap-8 text-sm font-bold uppercase tracking-widest text-slate-600">
+                <a href="/ui/settings" class="hover:text-primary transition-colors">Settings</a>
+                <a href="/ui/access" class="hover:text-primary transition-colors">Access Control</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="relative z-10 w-full text-center py-6 mt-12 border-t border-white/5">
+        <p class="text-xs text-slate-500 font-mono">
+            VisionX Security Systems &copy; 2026. All systems operational.
+            <span class="mx-2">|</span>
+            <span class="text-primary/70">Encrypted Connection</span>
+        </p>
+    </footer>
+</body>
+
+</html>

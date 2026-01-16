@@ -1,14 +1,19 @@
 ﻿<!DOCTYPE html>
+<html class="dark" lang="en">
 
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Security Reports Archive | VisionX</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Security Reports Archive | VisionX</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
@@ -20,7 +25,9 @@
                         "surface-dark": "#1a2629",
                         "danger": "#fa5f38",
                         "success": "#0bda54",
-                        "warning": "#facc15"
+                        "warning": "#facc15",
+                        "border-dark": "#293638",
+                        "panel": "#1c2526"
                     },
                     fontFamily: {
                         "display": ["Space Grotesk", "sans-serif"]
@@ -35,309 +42,372 @@
             },
         }
     </script>
-<style>
+    <style>
         body {
             font-family: "Space Grotesk", sans-serif;
         }
+
         .neo-border {
             border: 1px solid #293638;
         }
+
         .row-hover:hover {
             border-left: 4px solid #19c3e6;
             background-color: rgba(25, 195, 230, 0.05);
         }
+
         .monospaced {
             font-variant-numeric: tabular-nums;
         }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #111e21;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #293638;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #19c3e6;
+        }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
-<!-- Top Navigation Bar -->
-<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-[#293638] bg-background-light dark:bg-background-dark px-6 py-3 sticky top-0 z-50">
-<div class="flex items-center gap-8">
-<div class="flex items-center gap-4">
-<div class="size-8 text-primary">
-<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-<path d="M39.5563 34.1455V13.8546C39.5563 15.708 36.8773 17.3437 32.7927 18.3189C30.2914 18.916 27.263 19.2655 24 19.2655C20.737 19.2655 17.7086 18.916 15.2073 18.3189C11.1227 17.3437 8.44365 15.708 8.44365 13.8546V34.1455C8.44365 35.9988 11.1227 37.6346 15.2073 38.6098C17.7086 39.2069 20.737 39.5564 24 39.5564C27.263 39.5564 30.2914 39.2069 32.7927 38.6098C36.8773 37.6346 39.5563 35.9988 39.5563 34.1455Z" fill="currentColor"></path>
-<path clip-rule="evenodd" d="M10.4485 13.8519C10.4749 13.9271 10.6203 14.246 11.379 14.7361C12.298 15.3298 13.7492 15.9145 15.6717 16.3735C18.0007 16.9296 20.8712 17.2655 24 17.2655C27.1288 17.2655 29.9993 16.9296 32.3283 16.3735C34.2508 15.9145 35.702 15.3298 36.621 14.7361C37.3796 14.246 37.5251 13.9271 37.5515 13.8519C37.5287 13.7876 37.4333 13.5973 37.0635 13.2931C36.5266 12.8516 35.6288 12.3647 34.343 11.9175C31.79 11.0295 28.1333 10.4437 24 10.4437C19.8667 10.4437 16.2099 11.0295 13.657 11.9175C12.3712 12.3647 11.4734 12.8516 10.9365 13.2931C10.5667 13.5973 10.4713 13.7876 10.4485 13.8519ZM37.5563 18.7877C36.3176 19.3925 34.8502 19.8839 33.2571 20.2642C30.5836 20.9025 27.3973 21.2655 24 21.2655C20.6027 21.2655 17.4164 20.9025 14.7429 20.2642C13.1498 19.8839 11.6824 19.3925 10.4436 18.7877V34.1275C10.4515 34.1545 10.5427 34.4867 11.379 35.027C12.298 35.6207 13.7492 36.2054 15.6717 36.6644C18.0007 37.2205 20.8712 37.5564 24 37.5564C27.1288 37.5564 29.9993 37.2205 32.3283 36.6644C34.2508 36.2054 35.702 35.6207 36.621 35.027C37.4573 34.4867 37.5485 34.1546 37.5563 34.1275V18.7877ZM41.5563 13.8546V34.1455C41.5563 36.1078 40.158 37.5042 38.7915 38.3869C37.3498 39.3182 35.4192 40.0389 33.2571 40.5551C30.5836 41.1934 27.3973 41.5564 24 41.5564C20.6027 41.5564 17.4164 41.1934 14.7429 40.5551C12.5808 40.0389 10.6502 39.3182 9.20848 38.3869C7.84205 37.5042 6.44365 36.1078 6.44365 34.1455L6.44365 13.8546C6.44365 12.2684 7.37223 11.0454 8.39581 10.2036C9.43325 9.3505 10.8137 8.67141 12.343 8.13948C15.4203 7.06909 19.5418 6.44366 24 6.44366C28.4582 6.44366 32.5797 7.06909 35.657 8.13948C37.1863 8.67141 38.5667 9.3505 39.6042 10.2036C40.6278 11.0454 41.5563 12.2684 41.5563 13.8546Z" fill="currentColor" fill-rule="evenodd"></path>
-</svg>
-</div>
-<h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight font-display">VISION<span class="text-primary">X</span></h2>
-</div>
-<nav class="hidden md:flex items-center gap-9">
-<a class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Dashboard</a>
-<a class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Scans</a>
-<a class="text-primary text-sm font-bold border-b-2 border-primary pb-1" href="#">Reports</a>
-<a class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Settings</a>
-</nav>
-</div>
-<div class="flex items-center gap-6">
-<button class="flex min-w-[140px] cursor-pointer items-center justify-center rounded px-4 py-2 bg-primary text-background-dark text-sm font-bold tracking-tight hover:brightness-110 transition-all">
-<span class="material-symbols-outlined text-sm mr-2">add_circle</span>
-                Generate Report
-            </button>
-<div class="h-8 w-px bg-slate-200 dark:bg-[#293638]"></div>
-<div class="flex items-center gap-3">
-<div class="text-right hidden sm:block">
-<p class="text-xs font-bold text-slate-900 dark:text-white">A. CHEN</p>
-<p class="text-[10px] text-slate-500 uppercase tracking-widest">SOC Level 3</p>
-</div>
-<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-primary/50" data-alt="Cybersecurity analyst profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAdaYzGGEDkx4I2cvsWIiiax5m0a4TPXTep5Lw4w7tb85JWaHueAj_-txllNIeMFb1ggKn4qegWKxw_jfj7JFvQMZfS1OFNqy4paF6AwgANo7fcC5sxL2KfmtFcsLRJNeyuUBRSQqvOgDQmwPpHfnjsRc0i2yCN8WHfdybNWueP3DLa-dwZJKeGevCSBLiXGJnkvb42vTOJSHfGiumH1zuRnRhOWmngG_7_4DXYtIFc1fGb9Jos9PzQsHluhVO7VCLuHuGdPUGXA2Y");'></div>
-</div>
-</div>
-</header>
-<main class="flex-1 max-w-7xl mx-auto w-full p-6 md:p-10">
-<!-- Breadcrumbs -->
-<div class="flex items-center gap-2 mb-6">
-<a class="text-slate-500 dark:text-[#9db4b8] text-sm font-medium hover:text-primary transition-colors" href="#">Archive</a>
-<span class="text-slate-400 dark:text-[#9db4b8] text-sm font-medium">/</span>
-<span class="text-slate-900 dark:text-white text-sm font-bold tracking-wide uppercase">Security Reports</span>
-</div>
-<!-- Quick Stats -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-<div class="flex flex-col gap-2 rounded p-6 neo-border bg-white dark:bg-surface-dark/40 backdrop-blur-sm">
-<p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest">Total Reports</p>
-<div class="flex items-end gap-3">
-<p class="text-slate-900 dark:text-white tracking-tighter text-3xl font-bold leading-none monospaced">1,284</p>
-<p class="text-success text-sm font-bold pb-1">+12%</p>
-</div>
-</div>
-<div class="flex flex-col gap-2 rounded p-6 neo-border bg-white dark:bg-surface-dark/40 backdrop-blur-sm">
-<p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest">Critical Threats</p>
-<div class="flex items-end gap-3">
-<p class="text-slate-900 dark:text-white tracking-tighter text-3xl font-bold leading-none monospaced">42</p>
-<p class="text-danger text-sm font-bold pb-1">+5.2%</p>
-</div>
-</div>
-<div class="flex flex-col gap-2 rounded p-6 neo-border bg-white dark:bg-surface-dark/40 backdrop-blur-sm">
-<p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest">MTTD (Mean Time to Detect)</p>
-<div class="flex items-end gap-3">
-<p class="text-slate-900 dark:text-white tracking-tighter text-3xl font-bold leading-none monospaced">14.2m</p>
-<p class="text-success text-sm font-bold pb-1">-8%</p>
-</div>
-</div>
-</div>
-<!-- Filter Bar -->
-<div class="bg-white dark:bg-surface-dark neo-border rounded-lg mb-8 overflow-hidden">
-<div class="flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x border-slate-200 dark:border-[#293638]">
-<!-- Search -->
-<div class="flex-1 flex items-center px-4 py-3">
-<span class="material-symbols-outlined text-slate-400 dark:text-[#9db4b8] mr-3">search</span>
-<input class="w-full border-none bg-transparent focus:ring-0 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-[#9db4b8] text-sm" placeholder="Filter by Report ID or Domain..." type="text"/>
-</div>
-<!-- Filters -->
-<div class="flex items-center gap-3 p-3 flex-wrap">
-<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded bg-slate-100 dark:bg-[#293638] px-4 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-<span class="text-slate-700 dark:text-white text-xs font-bold uppercase tracking-wider">All Severities</span>
-<span class="material-symbols-outlined text-sm">expand_more</span>
-</button>
-<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded bg-slate-100 dark:bg-[#293638] px-4 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-<span class="text-slate-700 dark:text-white text-xs font-bold uppercase tracking-wider">Last 30 Days</span>
-<span class="material-symbols-outlined text-sm">calendar_today</span>
-</button>
-<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded border border-danger/30 px-4 text-danger hover:bg-danger/10 transition-colors">
-<span class="material-symbols-outlined text-sm">filter_list_off</span>
-<span class="text-xs font-bold uppercase tracking-wider">Clear</span>
-</button>
-</div>
-</div>
-</div>
-<!-- Reports Table -->
-<div class="bg-white dark:bg-background-dark neo-border rounded-lg overflow-hidden">
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead class="bg-slate-50 dark:bg-[#1a2629] border-b border-slate-200 dark:border-[#293638]">
-<tr>
-<th class="px-6 py-4 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">Report ID</th>
-<th class="px-6 py-4 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">Target / Domain</th>
-<th class="px-6 py-4 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">Risk Level</th>
-<th class="px-6 py-4 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">Created Date</th>
-<th class="px-6 py-4 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] text-right">Actions</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-slate-100 dark:divide-[#293638]">
-<!-- Row 1 -->
-<tr class="row-hover transition-all duration-200">
-<td class="px-6 py-4 monospaced font-medium text-primary text-sm">VX-8842-CRT</td>
-<td class="px-6 py-4">
-<div class="flex flex-col">
-<span class="text-slate-900 dark:text-white font-bold text-sm">mail-server-alpha.corp</span>
-<span class="text-[10px] text-slate-500 uppercase">Internal SMTP Relay</span>
-</div>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center rounded bg-danger/20 px-2 py-0.5 text-xs font-bold text-danger border border-danger/40 uppercase tracking-tighter">
-<span class="size-1.5 rounded-full bg-danger mr-2 animate-pulse"></span>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside
+            class="w-64 flex-shrink-0 bg-background-light dark:bg-background-dark border-r border-slate-200 dark:border-[#3c4f53] flex flex-col justify-between p-4">
+            <div class="flex flex-col gap-8">
+                <div class="flex items-center gap-3 px-2">
+                    <div class="size-10 rounded bg-primary flex items-center justify-center text-background-dark">
+                        <span class="material-symbols-outlined font-bold">shield_with_heart</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <h1 class="text-lg font-bold leading-none tracking-tight">VISIONX</h1>
+                        <p class="text-[10px] text-slate-500 dark:text-primary uppercase tracking-[0.2em] font-bold">
+                            Security Command</p>
+                    </div>
+                </div>
+                <nav class="flex flex-col gap-1">
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/home"><span class="material-symbols-outlined text-[20px]">home</span><span
+                            class="text-sm font-medium">Home</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/dashboard"><span class="material-symbols-outlined text-[20px]">dashboard</span><span
+                            class="text-sm font-medium">Command Center</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/scan"><span class="material-symbols-outlined text-[20px]">add_moderator</span><span
+                            class="text-sm font-medium">New Scan</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded bg-primary/10 text-primary border-l-2 border-primary"
+                        href="/ui/reports"><span class="material-symbols-outlined text-[20px] fill-1">radar</span><span
+                            class="text-sm font-medium">Threat Intel</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/history"><span class="material-symbols-outlined text-[20px]">history</span><span
+                            class="text-sm font-medium">Scan Archive</span></a>
+                    <div class="h-px bg-slate-200 dark:bg-[#3c4f53] my-2"></div>
+
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/access"><span class="material-symbols-outlined text-[20px]">group</span><span
+                            class="text-sm font-medium">Access Control</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/settings"><span class="material-symbols-outlined text-[20px]">settings</span><span
+                            class="text-sm font-medium">Settings</span></a>
+                </nav>
+            </div>
+            <div class="flex flex-col gap-4">
+                <div class="p-3 bg-panel rounded border border-[#3c4f53]">
+                    <p class="text-[10px] text-slate-400 uppercase font-bold mb-2">System Status</p>
+                    <div class="flex items-center gap-2">
+                        <div class="size-2 rounded-full bg-success animate-pulse"></div>
+                        <span class="text-xs font-mono">Node: US-EAST-1 (Active)</span>
+                    </div>
+                </div>
+                <a href="/ui/scan"
+                    class="w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-3 rounded flex items-center justify-center gap-2 transition-all">
+                    <span class="material-symbols-outlined text-sm">add_moderator</span>
+                    <span class="text-xs uppercase tracking-wider">Execute New Scan</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark relative">
+            <!-- Header Bar -->
+            <header
+                class="h-16 border-b border-slate-200 dark:border-[#3c4f53] flex items-center justify-between px-8 bg-background-light/50 dark:bg-background-dark/50 backdrop-blur-md sticky top-0 z-10">
+                <h2 class="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Threat Intel
+                    / Reports</h2>
+                <div class="flex items-center gap-4">
+                    <div class="relative group">
+                        <div
+                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <span class="material-symbols-outlined text-sm">search</span>
+                        </div>
+                        <input
+                            class="bg-slate-100 dark:bg-panel border-none text-xs rounded focus:ring-1 focus:ring-primary w-64 pl-9 py-2 transition-all"
+                            placeholder="Search reports..." type="text" />
+                    </div>
+                    <div class="size-8 rounded-full border-2 border-primary p-0.5">
+                        <div class="w-full h-full rounded-full bg-cover bg-center" data-alt="User profile avatar"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAdaYzGGEDkx4I2cvsWIiiax5m0a4TPXTep5Lw4w7tb85JWaHueAj_-txllNIeMFb1ggKn4qegWKxw_jfj7JFvQMZfS1OFNqy4paF6AwgANo7fcC5sxL2KfmtFcsLRJNeyuUBRSQqvOgDQmwPpHfnjsRc0i2yCN8WHfdybNWueP3DLa-dwZJKeGevCSBLiXGJnkvb42vTOJSHfGiumH1zuRnRhOWmngG_7_4DXYtIFc1fGb9Jos9PzQsHluhVO7VCLuHuGdPUGXA2Y');">
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-8 space-y-6">
+                <!-- Breadcrumbs / Heading -->
+                <div class="flex flex-wrap items-end justify-between gap-6 mb-2">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-primary text-xs font-bold tracking-[0.2em] uppercase">Intelligence
+                                Module</span>
+                            <div class="h-[1px] w-8 bg-primary/30"></div>
+                        </div>
+                        <h1
+                            class="text-slate-900 dark:text-white text-3xl font-black leading-none tracking-tighter uppercase">
+                            Security Reports</h1>
+                        <p class="text-slate-500 dark:text-[#9db4b8] text-sm font-normal mt-2 font-mono">
+                            Analyst: <span class="text-primary/80">A. CHEN (SOC L3)</span>  | 
+                            Verified: <span class="text-slate-900 dark:text-white font-bold">Real-time</span>
+                        </p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button
+                            class="flex items-center gap-2 h-10 px-4 rounded bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark text-slate-700 dark:text-white text-xs font-bold uppercase tracking-widest hover:border-slate-300 dark:hover:border-primary transition-all">
+                            <span class="material-symbols-outlined text-lg">filter_alt</span>
+                            Filter
+                        </button>
+                        <button
+                            class="flex items-center gap-2 h-10 px-4 rounded bg-primary text-background-dark text-xs font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all">
+                            <span class="material-symbols-outlined text-lg">add_circle</span>
+                            Generate Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div
+                        class="flex flex-col gap-2 rounded p-6 bg-white dark:bg-panel border border-slate-200 dark:border-[#3c4f53]">
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest">Total
+                            Reports
+                        </p>
+                        <div class="flex items-end gap-3">
+                            <p
+                                class="text-slate-900 dark:text-white tracking-tighter text-3xl font-bold leading-none monospaced">
+                                --</p>
+                            <p class="text-success text-sm font-bold pb-1">+12%</p>
+                        </div>
+                    </div>
+                    <div
+                        class="flex flex-col gap-2 rounded p-6 bg-white dark:bg-panel border border-slate-200 dark:border-[#3c4f53] relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-danger/5 group-hover:bg-danger/10 transition-colors"></div>
+                        <p class="text-danger text-xs font-bold uppercase tracking-widest relative z-10">Critical
+                            Threats
+                        </p>
+                        <div class="flex items-end gap-3 relative z-10">
+                            <p class="text-danger tracking-tighter text-3xl font-black leading-none monospaced">
+                                --</p>
+                            <p class="text-danger text-sm font-bold pb-1">+4</p>
+                        </div>
+                    </div>
+                    <div
+                        class="flex flex-col gap-2 rounded p-6 bg-white dark:bg-panel border border-slate-200 dark:border-[#3c4f53]">
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest">
+                            Verified Safe
+                        </p>
+                        <div class="flex items-end gap-3">
+                            <p
+                                class="text-slate-900 dark:text-white tracking-tighter text-3xl font-bold leading-none monospaced">
+                                845</p>
+                            <p class="text-slate-500 text-sm font-bold pb-1">Stable</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Table -->
+                <div
+                    class="rounded-xl border border-slate-200 dark:border-border-dark bg-white dark:bg-[#111e21] flex flex-col overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr
+                                    class="bg-slate-50 dark:bg-surface-dark/50 border-b border-slate-200 dark:border-border-dark">
+                                    <th
+                                        class="px-6 py-4 text-xs font-black text-slate-500 dark:text-[#9db4b8] uppercase tracking-[0.2em]">
+                                        Report ID</th>
+                                    <th
+                                        class="px-6 py-4 text-xs font-black text-slate-500 dark:text-[#9db4b8] uppercase tracking-[0.2em]">
+                                        Target / Domain</th>
+                                    <th
+                                        class="px-6 py-4 text-xs font-black text-slate-500 dark:text-[#9db4b8] uppercase tracking-[0.2em]">
+                                        Risk Level</th>
+                                    <th
+                                        class="px-6 py-4 text-xs font-black text-slate-500 dark:text-[#9db4b8] uppercase tracking-[0.2em]">
+                                        Created Date</th>
+                                    <th
+                                        class="px-6 py-4 text-xs font-black text-slate-500 dark:text-[#9db4b8] uppercase tracking-[0.2em] text-right">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-body" class="divide-y divide-slate-100 dark:divide-border-dark">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Table Footer / Pagination -->
+                    <div
+                        class="mt-auto border-t border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-surface-dark/30 px-6 py-4 flex items-center justify-between">
+                        <div class="text-slate-500 dark:text-[#9db4b8] text-[10px] font-bold uppercase tracking-widest">
+                            Showing 1-5 of 1,284 results
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button
+                                class="size-8 rounded border border-slate-200 dark:border-border-dark flex items-center justify-center text-slate-500 dark:text-white hover:border-primary transition-all">
+                                <span class="material-symbols-outlined text-sm">chevron_left</span>
+                            </button>
+                            <button
+                                class="size-8 rounded bg-primary text-background-dark flex items-center justify-center text-xs font-bold">1</button>
+                            <button
+                                class="size-8 rounded border border-slate-200 dark:border-border-dark flex items-center justify-center text-slate-500 dark:text-[#9db4b8] text-xs font-bold hover:text-primary transition-all">2</button>
+                            <button
+                                class="size-8 rounded border border-slate-200 dark:border-border-dark flex items-center justify-center text-slate-500 dark:text-[#9db4b8] text-xs font-bold hover:text-primary transition-all">3</button>
+                            <span class="text-slate-400 text-xs px-1">...</span>
+                            <button
+                                class="size-8 rounded border border-slate-200 dark:border-border-dark flex items-center justify-center text-slate-500 dark:text-white hover:border-primary transition-all">
+                                <span class="material-symbols-outlined text-sm">chevron_right</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Status Indicator (SOC Aesthetic) -->
+                <div
+                    class="mt-8 flex items-center justify-between px-4 py-2 bg-slate-100 dark:bg-surface-dark/20 rounded border-l-2 border-primary">
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-2">
+                            <span class="size-2 rounded-full bg-success animate-pulse"></span>
+                            <span
+                                class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Scan
+                                Engine: Online</span>
+                        </div>
+                        <div class="h-4 w-px bg-slate-300 dark:bg-[#293638]"></div>
+                        <div class="text-[10px] font-medium text-slate-500 dark:text-[#9db4b8]">LATENCY: <span
+                                class="monospaced">42ms</span></div>
+                    </div>
+                    <div class="text-[10px] font-medium text-slate-500 dark:text-[#9db4b8] monospaced uppercase">Last
+                        Refresh:
+                        Real-time</div>
+                </div>
+
+                <footer class="border-t border-slate-200 dark:border-[#293638] pt-6 text-center opacity-60">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">VisionX Security Systems
+                        © 2026</p>
+                </footer>
+            </div>
+        </main>
+    </div>
+    <script>
+        let globalReportData = [];
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const tbody = document.getElementById("report-body");
+
+            fetch("/api/history")
+                .then(res => res.json())
+                .then(data => {
+                    globalReportData = data;
+                    // Filter for Dangerous items
+                    const reports = data.filter(d => d.risk_level === 'Dangerous');
+
+                    document.querySelector('.monospaced.text-3xl').textContent = data.length.toLocaleString();
+                    document.querySelectorAll('.monospaced.text-3xl')[1].textContent = reports.length.toLocaleString();
+
+                    tbody.innerHTML = "";
+                    if (reports.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500">No critical threat reports found.</td></tr>`;
+                        return;
+                    }
+
+                    // Sort by date desc
+                    reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                    reports.forEach(item => {
+                        const row = `
+                        <tr class="row-hover transition-all duration-200">
+                            <td class="px-6 py-4 monospaced font-medium text-primary text-sm">VX-${item.id}</td>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col">
+                                    <span class="text-slate-900 dark:text-white font-bold text-sm truncate max-w-[200px]" title="${item.target}">${item.target}</span>
+                                    <span class="text-[10px] text-slate-500 uppercase">${item.scan_type} Scan</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center rounded bg-danger/20 px-2 py-0.5 text-xs font-bold text-danger border border-danger/40 uppercase tracking-tighter">
+                                    <span class="size-1.5 rounded-full bg-danger mr-2 animate-pulse"></span>
                                     Dangerous
                                 </span>
-</td>
-<td class="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm monospaced">2023-10-24 14:02</td>
-<td class="px-6 py-4 text-right">
-<div class="flex justify-end gap-2">
-<button class="p-2 text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined text-lg">visibility</span>
-</button>
-<button class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-surface-dark hover:bg-primary hover:text-background-dark text-slate-700 dark:text-white text-xs font-bold rounded transition-all neo-border">
-<span class="material-symbols-outlined text-sm">download</span>
+                            </td>
+                            <td class="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm monospaced">
+                                ${new Date(item.created_at).toLocaleString()}
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex justify-end gap-2">
+                                    <button onclick="downloadReportItem(${item.id})" class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-surface-dark hover:bg-primary hover:text-background-dark text-slate-700 dark:text-white text-xs font-bold rounded transition-all neo-border">
+                                        <span class="material-symbols-outlined text-sm">download</span>
                                         PDF
                                     </button>
-</div>
-</td>
-</tr>
-<!-- Row 2 -->
-<tr class="row-hover transition-all duration-200">
-<td class="px-6 py-4 monospaced font-medium text-primary text-sm">VX-8839-SEC</td>
-<td class="px-6 py-4">
-<div class="flex flex-col">
-<span class="text-slate-900 dark:text-white font-bold text-sm">auth-portal-v3.io</span>
-<span class="text-[10px] text-slate-500 uppercase">Customer Portal</span>
-</div>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center rounded bg-success/20 px-2 py-0.5 text-xs font-bold text-success border border-success/40 uppercase tracking-tighter">
-<span class="size-1.5 rounded-full bg-success mr-2"></span>
-                                    Safe
-                                </span>
-</td>
-<td class="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm monospaced">2023-10-23 09:15</td>
-<td class="px-6 py-4 text-right">
-<div class="flex justify-end gap-2">
-<button class="p-2 text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined text-lg">visibility</span>
-</button>
-<button class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-surface-dark hover:bg-primary hover:text-background-dark text-slate-700 dark:text-white text-xs font-bold rounded transition-all neo-border">
-<span class="material-symbols-outlined text-sm">download</span>
-                                        PDF
-                                    </button>
-</div>
-</td>
-</tr>
-<!-- Row 3 -->
-<tr class="row-hover transition-all duration-200">
-<td class="px-6 py-4 monospaced font-medium text-primary text-sm">VX-8835-SUS</td>
-<td class="px-6 py-4">
-<div class="flex flex-col">
-<span class="text-slate-900 dark:text-white font-bold text-sm">legacy-vpn.internal</span>
-<span class="text-[10px] text-slate-500 uppercase">Remote Access Node</span>
-</div>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center rounded bg-warning/20 px-2 py-0.5 text-xs font-bold text-warning border border-warning/40 uppercase tracking-tighter">
-<span class="size-1.5 rounded-full bg-warning mr-2"></span>
-                                    Suspicious
-                                </span>
-</td>
-<td class="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm monospaced">2023-10-22 22:48</td>
-<td class="px-6 py-4 text-right">
-<div class="flex justify-end gap-2">
-<button class="p-2 text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined text-lg">visibility</span>
-</button>
-<button class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-surface-dark hover:bg-primary hover:text-background-dark text-slate-700 dark:text-white text-xs font-bold rounded transition-all neo-border">
-<span class="material-symbols-outlined text-sm">download</span>
-                                        PDF
-                                    </button>
-</div>
-</td>
-</tr>
-<!-- Row 4 -->
-<tr class="row-hover transition-all duration-200">
-<td class="px-6 py-4 monospaced font-medium text-primary text-sm">VX-8830-CRT</td>
-<td class="px-6 py-4">
-<div class="flex flex-col">
-<span class="text-slate-900 dark:text-white font-bold text-sm">billing.customer-prod.net</span>
-<span class="text-[10px] text-slate-500 uppercase">Payment Gateway</span>
-</div>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center rounded bg-danger/20 px-2 py-0.5 text-xs font-bold text-danger border border-danger/40 uppercase tracking-tighter">
-<span class="size-1.5 rounded-full bg-danger mr-2 animate-pulse"></span>
-                                    Dangerous
-                                </span>
-</td>
-<td class="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm monospaced">2023-10-21 11:30</td>
-<td class="px-6 py-4 text-right">
-<div class="flex justify-end gap-2">
-<button class="p-2 text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined text-lg">visibility</span>
-</button>
-<button class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-surface-dark hover:bg-primary hover:text-background-dark text-slate-700 dark:text-white text-xs font-bold rounded transition-all neo-border">
-<span class="material-symbols-outlined text-sm">download</span>
-                                        PDF
-                                    </button>
-</div>
-</td>
-</tr>
-<!-- Row 5 -->
-<tr class="row-hover transition-all duration-200">
-<td class="px-6 py-4 monospaced font-medium text-primary text-sm">VX-8822-SEC</td>
-<td class="px-6 py-4">
-<div class="flex flex-col">
-<span class="text-slate-900 dark:text-white font-bold text-sm">dev-cluster-node-04</span>
-<span class="text-[10px] text-slate-500 uppercase">Staging Environment</span>
-</div>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center rounded bg-success/20 px-2 py-0.5 text-xs font-bold text-success border border-success/40 uppercase tracking-tighter">
-<span class="size-1.5 rounded-full bg-success mr-2"></span>
-                                    Safe
-                                </span>
-</td>
-<td class="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm monospaced">2023-10-20 16:55</td>
-<td class="px-6 py-4 text-right">
-<div class="flex justify-end gap-2">
-<button class="p-2 text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined text-lg">visibility</span>
-</button>
-<button class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-surface-dark hover:bg-primary hover:text-background-dark text-slate-700 dark:text-white text-xs font-bold rounded transition-all neo-border">
-<span class="material-symbols-outlined text-sm">download</span>
-                                        PDF
-                                    </button>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<!-- Table Footer -->
-<div class="px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-200 dark:border-[#293638] bg-slate-50 dark:bg-[#1a2629]/30">
-<div class="flex items-center gap-4">
-<span class="text-xs text-slate-500 dark:text-[#9db4b8]">Showing <span class="font-bold text-slate-900 dark:text-white">1 - 5</span> of 1,284 results</span>
-<select class="bg-transparent border-none text-xs font-bold text-primary focus:ring-0 cursor-pointer uppercase tracking-widest">
-<option>5 per page</option>
-<option>20 per page</option>
-<option>50 per page</option>
-</select>
-</div>
-<div class="flex gap-1">
-<button class="flex size-8 items-center justify-center rounded neo-border dark:bg-surface-dark hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-30" disabled="">
-<span class="material-symbols-outlined text-sm">chevron_left</span>
-</button>
-<button class="flex size-8 items-center justify-center rounded bg-primary text-background-dark font-bold text-xs">1</button>
-<button class="flex size-8 items-center justify-center rounded neo-border dark:bg-surface-dark hover:bg-slate-200 dark:hover:bg-slate-700 text-xs text-slate-900 dark:text-white">2</button>
-<button class="flex size-8 items-center justify-center rounded neo-border dark:bg-surface-dark hover:bg-slate-200 dark:hover:bg-slate-700 text-xs text-slate-900 dark:text-white">3</button>
-<span class="flex size-8 items-center justify-center text-slate-500">...</span>
-<button class="flex size-8 items-center justify-center rounded neo-border dark:bg-surface-dark hover:bg-slate-200 dark:hover:bg-slate-700 text-xs text-slate-900 dark:text-white">257</button>
-<button class="flex size-8 items-center justify-center rounded neo-border dark:bg-surface-dark hover:bg-slate-200 dark:hover:bg-slate-700">
-<span class="material-symbols-outlined text-sm">chevron_right</span>
-</button>
-</div>
-</div>
-</div>
-<!-- System Status Indicator (SOC Aesthetic) -->
-<div class="mt-8 flex items-center justify-between px-4 py-2 bg-slate-100 dark:bg-surface-dark/20 rounded border-l-2 border-primary">
-<div class="flex items-center gap-4">
-<div class="flex items-center gap-2">
-<span class="size-2 rounded-full bg-success animate-pulse"></span>
-<span class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Scan Engine: Online</span>
-</div>
-<div class="h-4 w-px bg-slate-300 dark:bg-[#293638]"></div>
-<div class="text-[10px] font-medium text-slate-500 dark:text-[#9db4b8]">LATENCY: <span class="monospaced">42ms</span></div>
-</div>
-<div class="text-[10px] font-medium text-slate-500 dark:text-[#9db4b8] monospaced uppercase">Last Update: Oct 24, 2023 14:32:01 UTC</div>
-</div>
-</main>
-<footer class="border-t border-slate-200 dark:border-[#293638] px-10 py-6 text-center">
-<p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">VisionX Security Systems © 2023 | Encrypted Session</p>
-</footer>
-</body></html>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                        tbody.innerHTML += row;
+                    });
+                })
+                .catch(err => console.error(err));
+        });
+
+        function downloadReportItem(id) {
+            const item = globalReportData.find(d => d.id === id);
+            if (!item) return;
+
+            const filename = `VISIONX_CRITICAL_REPORT_${item.id}.txt`;
+            let content = `VISIONX CRITICAL THREAT REPORT\n`;
+            content += `=================================================\n`;
+            content += `Scan ID: ${item.id}\n`;
+            content += `Date: ${item.created_at}\n`;
+            content += `Target: ${item.target}\n`;
+            content += `Risk Level: ${item.risk_level.toUpperCase()}\n`;
+            content += `Risk Score: ${item.risk_score}\n`;
+            content += `=================================================\n\n`;
+            let reasons = [];
+            if (typeof item.reasons === 'string') {
+                try { reasons = JSON.parse(item.reasons); } catch (e) { reasons = [item.reasons]; }
+            } else {
+                reasons = item.reasons || [];
+            }
+            reasons.forEach(r => content += `- [CRITICAL] ${r}\n`);
+
+            content += `\nIMMEDIATE ACTION REQUIRED.`;
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+
+</html>
