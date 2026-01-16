@@ -1,0 +1,330 @@
+﻿<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VisionX | Security Command Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#19c3e6",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#111e21",
+                        "danger": "#fa5f38",
+                        "success": "#0bda54",
+                        "warning": "#ffd733",
+                        "panel": "#1c2526"
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .glow-cyan { box-shadow: 0 0 15px rgba(25, 195, 230, 0.15); }
+        .glow-red { box-shadow: 0 0 15px rgba(250, 95, 56, 0.2); }
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #19c3e6, transparent);
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased min-h-screen">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 flex-shrink-0 bg-background-light dark:bg-background-dark border-r border-slate-200 dark:border-[#3c4f53] flex flex-col justify-between p-4">
+<div class="flex flex-col gap-8">
+<div class="flex items-center gap-3 px-2">
+<div class="size-10 rounded bg-primary flex items-center justify-center text-background-dark">
+<span class="material-symbols-outlined font-bold">shield_with_heart</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-lg font-bold leading-none tracking-tight">VISIONX</h1>
+<p class="text-[10px] text-slate-500 dark:text-primary uppercase tracking-[0.2em] font-bold">Security Command</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded bg-primary/10 text-primary border-l-2 border-primary" href="#">
+<span class="material-symbols-outlined text-[20px] fill-1">dashboard</span>
+<span class="text-sm font-medium">Command Center</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">radar</span>
+<span class="text-sm font-medium">Threat Intel</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<span class="text-sm font-medium">Scan Archive</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings_input_component</span>
+<span class="text-sm font-medium">Integrations</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm font-medium">Access Control</span>
+</a>
+</nav>
+</div>
+<div class="flex flex-col gap-4">
+<div class="p-3 bg-panel rounded border border-[#3c4f53]">
+<p class="text-[10px] text-slate-400 uppercase font-bold mb-2">System Status</p>
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-success animate-pulse"></div>
+<span class="text-xs font-mono">Node: US-EAST-1 (Active)</span>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-3 rounded flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined text-sm">add_moderator</span>
+<span class="text-xs uppercase tracking-wider">Execute New Scan</span>
+</button>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark relative">
+<!-- Header Bar -->
+<header class="h-16 border-b border-slate-200 dark:border-[#3c4f53] flex items-center justify-between px-8 bg-background-light/50 dark:bg-background-dark/50 backdrop-blur-md sticky top-0 z-10">
+<h2 class="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Dashboard / Overview</h2>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-slate-100 dark:bg-panel px-3 py-1.5 rounded border border-slate-200 dark:border-[#3c4f53]">
+<span class="material-symbols-outlined text-sm text-primary">search</span>
+<input class="bg-transparent border-none text-xs focus:ring-0 w-48" placeholder="Search signals..." type="text"/>
+</div>
+<div class="size-8 rounded-full border-2 border-primary p-0.5">
+<div class="w-full h-full rounded-full bg-cover bg-center" data-alt="User profile avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA5C2hXEq0mSq196AOmrv6n2wvvvPkuDsl0JpuqJli8aowz0EnIn_aZmP0hu0aiEC-ekYEjCCIy2IVY-gVKMU2IrRbMrJWKDxAXPBoM1iuaQoIby6bRCPnCzjRtnO3CLvpDJsrbS1rPBdMGAayWiu_Fo7k5swUVSYLeTpu-kx-P1RBrxp7RN2hbfhJYlFbStsfl_AmA--32d5pDKSbdd35DUjvvlF3QFm7WaX7hZdSASCdMXJq109o6iSnNxFkvp2OpePIAOOczj5E')"></div>
+</div>
+</div>
+</header>
+<div class="p-8 space-y-8">
+<!-- Stats Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bg-white dark:bg-panel p-6 rounded border border-slate-200 dark:border-[#3c4f53] glow-cyan">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary">analytics</span>
+<span class="text-success text-xs font-bold">+12.4%</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Total Scans</p>
+<p class="text-3xl font-bold mt-1">128,402</p>
+</div>
+<div class="bg-white dark:bg-panel p-6 rounded border border-slate-200 dark:border-[#3c4f53] glow-red">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-danger">report_problem</span>
+<span class="text-danger text-xs font-bold">+5.1%</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">High Risk Alerts</p>
+<p class="text-3xl font-bold mt-1 text-danger">342</p>
+</div>
+<div class="bg-white dark:bg-panel p-6 rounded border border-slate-200 dark:border-[#3c4f53]">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-success">verified_user</span>
+<span class="text-danger text-xs font-bold">-2.0%</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Safe Scans</p>
+<p class="text-3xl font-bold mt-1">124,001</p>
+</div>
+<div class="bg-white dark:bg-panel p-6 rounded border border-slate-200 dark:border-[#3c4f53]">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-warning">speed</span>
+<span class="text-success text-xs font-bold">+0.5%</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Avg Risk Score</p>
+<p class="text-3xl font-bold mt-1 text-warning">12.4%</p>
+</div>
+</section>
+<!-- Charts Row -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Main Chart -->
+<div class="lg:col-span-2 bg-white dark:bg-panel rounded border border-slate-200 dark:border-[#3c4f53] p-6 relative overflow-hidden">
+<div class="scanline"></div>
+<div class="flex justify-between items-center mb-6">
+<div>
+<h3 class="text-lg font-bold tracking-tight">Threat Distribution</h3>
+<p class="text-xs text-slate-500">Global signal analysis over the last 30 days</p>
+</div>
+<select class="bg-slate-100 dark:bg-background-dark border-none rounded text-xs focus:ring-1 focus:ring-primary py-1 pr-8">
+<option>Last 30 Days</option>
+<option>Last 7 Days</option>
+<option>Real-time</option>
+</select>
+</div>
+<div class="h-64 w-full flex flex-col justify-end gap-4">
+<!-- Simulated Chart Visualization -->
+<div class="relative h-full w-full">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 800 200">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#19c3e6" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#19c3e6" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,150 C50,140 100,180 150,160 C200,140 250,50 300,70 C350,90 400,20 450,40 C500,60 550,150 600,130 C650,110 700,160 750,140 L800,150 L800,200 L0,200 Z" fill="url(#chartGradient)"></path>
+<path d="M0,150 C50,140 100,180 150,160 C200,140 250,50 300,70 C350,90 400,20 450,40 C500,60 550,150 600,130 C650,110 700,160 750,140 L800,150" fill="none" stroke="#19c3e6" stroke-width="3"></path>
+<!-- Grid lines -->
+<line stroke="#3c4f53" stroke-dasharray="4" stroke-opacity="0.3" x1="0" x2="800" y1="50" y2="50"></line>
+<line stroke="#3c4f53" stroke-dasharray="4" stroke-opacity="0.3" x1="0" x2="800" y1="100" y2="100"></line>
+<line stroke="#3c4f53" stroke-dasharray="4" stroke-opacity="0.3" x1="0" x2="800" y1="150" y2="150"></line>
+</svg>
+</div>
+<div class="flex justify-between text-[10px] text-slate-500 font-mono font-bold uppercase tracking-widest px-1">
+<span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+</div>
+</div>
+</div>
+<!-- Source Breakdown -->
+<div class="bg-white dark:bg-panel rounded border border-slate-200 dark:border-[#3c4f53] p-6 flex flex-col">
+<h3 class="text-lg font-bold tracking-tight mb-1">Scan Sources</h3>
+<p class="text-xs text-slate-500 mb-6">Origin distribution breakdown</p>
+<div class="flex-1 flex flex-col justify-center items-center py-4">
+<div class="relative size-40">
+<!-- Doughnut Chart Mock -->
+<svg class="size-full transform -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="transparent" r="40" stroke="#1c2526" stroke-width="12"></circle>
+<circle cx="50" cy="50" fill="transparent" r="40" stroke="#19c3e6" stroke-dasharray="251.2" stroke-dashoffset="62.8" stroke-width="12"></circle>
+<circle cx="50" cy="50" fill="transparent" r="40" stroke="#fa5f38" stroke-dasharray="251.2" stroke-dashoffset="200" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-2xl font-bold">4.2k</span>
+<span class="text-[10px] uppercase text-slate-500 font-bold">Requests</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mt-6">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-primary"></div>
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-500 font-bold uppercase">Email</span>
+<span class="text-xs font-bold">75%</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-danger"></div>
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-500 font-bold uppercase">Web</span>
+<span class="text-xs font-bold">20%</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-warning"></div>
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-500 font-bold uppercase">SMS</span>
+<span class="text-xs font-bold">3%</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-slate-400"></div>
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-500 font-bold uppercase">API</span>
+<span class="text-xs font-bold">2%</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Recent Scans Table -->
+<section class="bg-white dark:bg-panel rounded border border-slate-200 dark:border-[#3c4f53] overflow-hidden">
+<div class="p-6 border-b border-slate-200 dark:border-[#3c4f53] flex justify-between items-center">
+<h3 class="text-lg font-bold tracking-tight">Live Activity Stream</h3>
+<div class="flex gap-2">
+<button class="text-xs font-bold uppercase px-3 py-1 bg-slate-100 dark:bg-background-dark rounded border border-slate-200 dark:border-[#3c4f53] hover:text-primary transition-colors">Export CSV</button>
+<button class="text-xs font-bold uppercase px-3 py-1 bg-slate-100 dark:bg-background-dark rounded border border-slate-200 dark:border-[#3c4f53] hover:text-primary transition-colors">View All</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 dark:bg-background-dark/30 text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-[0.15em] font-bold">
+<th class="px-6 py-4 border-b border-slate-200 dark:border-[#3c4f53]">Scan ID</th>
+<th class="px-6 py-4 border-b border-slate-200 dark:border-[#3c4f53]">Target / Resource</th>
+<th class="px-6 py-4 border-b border-slate-200 dark:border-[#3c4f53]">Risk Level</th>
+<th class="px-6 py-4 border-b border-slate-200 dark:border-[#3c4f53]">Source</th>
+<th class="px-6 py-4 border-b border-slate-200 dark:border-[#3c4f53]">Timestamp</th>
+<th class="px-6 py-4 border-b border-slate-200 dark:border-[#3c4f53]">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-[#3c4f53]">
+<tr class="hover:bg-slate-50 dark:hover:bg-background-dark/20 transition-colors">
+<td class="px-6 py-4 font-mono text-xs text-primary">VX-29384-Z</td>
+<td class="px-6 py-4 text-xs font-medium">https://secure-login-v5.verification.net/auth</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-danger/10 text-danger border border-danger/20">Critical Danger</span>
+</td>
+<td class="px-6 py-4 text-xs">Email Hook</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500">2023-11-24 14:22:01</td>
+<td class="px-6 py-4">
+<button class="material-symbols-outlined text-slate-400 hover:text-primary text-lg">open_in_new</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-background-dark/20 transition-colors">
+<td class="px-6 py-4 font-mono text-xs text-primary">VX-29385-A</td>
+<td class="px-6 py-4 text-xs font-medium">attachment_invoice_7721.zip</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-warning/10 text-warning border border-warning/20">Suspicious</span>
+</td>
+<td class="px-6 py-4 text-xs">MS Outlook</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500">2023-11-24 14:19:44</td>
+<td class="px-6 py-4">
+<button class="material-symbols-outlined text-slate-400 hover:text-primary text-lg">open_in_new</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-background-dark/20 transition-colors">
+<td class="px-6 py-4 font-mono text-xs text-primary">VX-29386-B</td>
+<td class="px-6 py-4 text-xs font-medium">api.internal-cloud.io/v1/sync</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-success/10 text-success border border-success/20">Verified Safe</span>
+</td>
+<td class="px-6 py-4 text-xs">API Gateway</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500">2023-11-24 14:18:12</td>
+<td class="px-6 py-4">
+<button class="material-symbols-outlined text-slate-400 hover:text-primary text-lg">open_in_new</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-background-dark/20 transition-colors">
+<td class="px-6 py-4 font-mono text-xs text-primary">VX-29387-C</td>
+<td class="px-6 py-4 text-xs font-medium">https://office365-verify.com/login</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-danger/10 text-danger border border-danger/20">Critical Danger</span>
+</td>
+<td class="px-6 py-4 text-xs">SMS Redirect</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500">2023-11-24 14:15:59</td>
+<td class="px-6 py-4">
+<button class="material-symbols-outlined text-slate-400 hover:text-primary text-lg">open_in_new</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 bg-slate-50 dark:bg-background-dark/10 flex items-center justify-between text-xs font-bold text-slate-500">
+<span>Showing 4 of 2,901 entries</span>
+<div class="flex gap-1">
+<button class="p-1 hover:text-primary"><span class="material-symbols-outlined text-sm">chevron_left</span></button>
+<span class="px-2 py-1 bg-primary/10 text-primary rounded">1</span>
+<button class="px-2 py-1 hover:bg-slate-200 dark:hover:bg-panel rounded">2</button>
+<button class="px-2 py-1 hover:bg-slate-200 dark:hover:bg-panel rounded">3</button>
+<button class="p-1 hover:text-primary"><span class="material-symbols-outlined text-sm">chevron_right</span></button>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+</body></html>
