@@ -13,6 +13,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -379,33 +380,60 @@
             const item = globalReportData.find(d => d.id === id);
             if (!item) return;
 
-            const filename = `VISIONX_CRITICAL_REPORT_${item.id}.txt`;
-            let content = `VISIONX CRITICAL THREAT REPORT\n`;
-            content += `=================================================\n`;
-            content += `Scan ID: ${item.id}\n`;
-            content += `Date: ${item.created_at}\n`;
-            content += `Target: ${item.target}\n`;
-            content += `Risk Level: ${item.risk_level.toUpperCase()}\n`;
-            content += `Risk Score: ${item.risk_score}\n`;
-            content += `=================================================\n\n`;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header - Critical Red
+            doc.setFillColor(224, 76, 76);
+            doc.rect(0, 0, 210, 20, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.text("VISIONX CRITICAL THREAT INTELLIGENCE", 20, 13);
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.text(`Report Generated: ${new Date().toLocaleString()}`, 20, 30);
+
+            // Divider
+            doc.setLineWidth(0.5);
+            doc.line(20, 35, 190, 35);
+
+            // Details
+            doc.setFontSize(12);
+            doc.text(`Scan ID: ${item.id}`, 20, 45);
+            doc.text(`Target Asset: ${item.target}`, 20, 55);
+            doc.text(`Scan Type: ${item.scan_type}`, 20, 65);
+
+            doc.setTextColor(224, 76, 76);
+            doc.setFontSize(14);
+            doc.text(`RISK LEVEL: ${item.risk_level.toUpperCase()} (Score: ${item.risk_score})`, 20, 80);
+            doc.setTextColor(0, 0, 0);
+
+            // Findings
+            doc.setFontSize(12);
+            doc.text("Identified Threats:", 20, 95);
+
             let reasons = [];
             if (typeof item.reasons === 'string') {
                 try { reasons = JSON.parse(item.reasons); } catch (e) { reasons = [item.reasons]; }
             } else {
                 reasons = item.reasons || [];
             }
-            reasons.forEach(r => content += `- [CRITICAL] ${r}\n`);
 
-            content += `\nIMMEDIATE ACTION REQUIRED.`;
+            let yPos = 105;
+            reasons.forEach(r => {
+                doc.setFontSize(10);
+                doc.setTextColor(224, 76, 76); // Red text for threats
+                const splitText = doc.splitTextToSize(`[CRITICAL] ${r}`, 170);
+                doc.text(splitText, 20, yPos);
+                yPos += (10 * splitText.length);
+            });
 
-            const blob = new Blob([content], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text("IMMEDIATE ACTION REQUIRED: Isolate asset and patch vulnerabilities.", 20, yPos + 10);
+
+            doc.save(`VISIONX_CRITICAL_REPORT_${item.id}.pdf`);
         }
     </script>
 </body>

@@ -15,6 +15,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -146,8 +147,8 @@
                             class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                             <span class="material-symbols-outlined text-sm">search</span>
                         </div>
-                        <input
-                            class="bg-slate-100 dark:bg-panel border-none text-xs rounded focus:ring-1 focus:ring-primary w-64 pl-9 py-2 transition-all"
+                        <input id="history-search"
+                            class="bg-white dark:bg-[#0b1416] border border-slate-200 dark:border-[#2a3b3d] text-xs rounded focus:ring-1 focus:ring-primary w-64 pl-9 py-2 transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
                             placeholder="Search audit logs..." type="text" />
                     </div>
                     <div class="size-8 rounded-full border-2 border-primary p-0.5">
@@ -165,7 +166,7 @@
                         <div class="flex items-center gap-2 mb-1">
                             <span class="text-primary text-xs font-bold tracking-[0.2em] uppercase">Security
                                 Module</span>
-                            <div class="h-[1px] w-8 bg-primary/30"></div>
+                            <div class="h-1.5 w-1.5 rounded-full bg-primary/30"></div>
                         </div>
                         <h1
                             class="text-slate-900 dark:text-white text-3xl font-black leading-none tracking-tighter uppercase">
@@ -273,15 +274,16 @@
                 </div>
 
                 <!-- Footnote / System Status -->
+                <!-- Footnote / System Status -->
                 <footer class="flex items-center justify-between pt-4 opacity-60">
                     <div class="text-slate-500 dark:text-[#9db4b8] text-[10px] font-medium tracking-wide">
-                        VisionX Security Protocol v4.2.0.
+                        VisionX Phishing Defense. Real-time Analysis Engine. © 2026.
                     </div>
                     <div
                         class="flex items-center gap-4 text-slate-500 dark:text-[#9db4b8] text-[10px] font-bold uppercase tracking-[0.2em]">
                         <div class="flex items-center gap-2">
                             <span class="size-1.5 rounded-full bg-success"></span>
-                            System Online
+                            All Systems Active | Encrypted Connection
                         </div>
                     </div>
                 </footer>
@@ -292,6 +294,23 @@
         let globalHistoryData = [];
 
         document.addEventListener("DOMContentLoaded", function () {
+
+            // Search Functionality
+            const searchInput = document.getElementById("history-search");
+            searchInput.addEventListener("input", function (e) {
+                const term = e.target.value.toLowerCase();
+                if (!term) {
+                    renderTable(globalHistoryData);
+                    return;
+                }
+                const filtered = globalHistoryData.filter(item =>
+                    item.target.toLowerCase().includes(term) ||
+                    item.scan_type.toLowerCase().includes(term) ||
+                    item.risk_level.toLowerCase().includes(term)
+                );
+                renderTable(filtered);
+            });
+
             fetch("/api/history")
                 .then(res => res.json())
                 .then(data => {
@@ -397,29 +416,51 @@
             const item = globalHistoryData.find(d => d.id === id);
             if (!item) return;
 
-            const filename = `VISIONX_REPORT_${item.id}.txt`;
-            let content = `VISIONX ARCHIVED REPORT\n`;
-            content += `Scan ID: ${item.id}\n`;
-            content += `Date: ${item.created_at}\n`;
-            content += `Target: ${item.target}\n`;
-            content += `Risk: ${item.risk_level} (${item.risk_score})\n`;
-            content += `\nDETAILS:\n`;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFontSize(20);
+            doc.text("VISIONX AUDIT REPORT", 20, 20);
+
+            doc.setFontSize(10);
+            doc.text(`Generated: ${new Date().toLocaleString()}`, 20, 30);
+
+            // Divider
+            doc.setLineWidth(0.5);
+            doc.line(20, 35, 190, 35);
+
+            // Details
+            doc.setFontSize(12);
+            doc.text(`Scan ID: ${item.id}`, 20, 45);
+            doc.text(`Target: ${item.target}`, 20, 55);
+            doc.text(`Type: ${item.scan_type}`, 20, 65);
+            doc.text(`Date: ${item.created_at}`, 20, 75);
+
+            const riskColor = item.risk_level === 'Dangerous' ? [224, 76, 76] : (item.risk_level === 'Suspicious' ? [255, 215, 51] : [76, 224, 76]);
+            doc.setTextColor(...riskColor);
+            doc.text(`Risk Assessment: ${item.risk_level} (Score: ${item.risk_score})`, 20, 85);
+            doc.setTextColor(0, 0, 0);
+
+            // Findings
+            doc.text("Detailed Findings:", 20, 100);
+
             let reasons = [];
             if (typeof item.reasons === 'string') {
                 try { reasons = JSON.parse(item.reasons); } catch (e) { reasons = [item.reasons]; }
             } else {
                 reasons = item.reasons || [];
             }
-            reasons.forEach(r => content += `- ${r}\n`);
 
-            const blob = new Blob([content], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            let yPos = 110;
+            reasons.forEach(r => {
+                doc.setFontSize(10);
+                const splitText = doc.splitTextToSize(`- ${r}`, 170);
+                doc.text(splitText, 20, yPos);
+                yPos += (10 * splitText.length);
+            });
+
+            doc.save(`VISIONX_REPORT_${item.id}.pdf`);
         }
     </script>
 </body>

@@ -13,9 +13,14 @@ import random
 from datetime import datetime
 from urllib.parse import urlparse
 
-from flask import Flask, request, jsonify, send_from_directory, abort
+from flask import Flask, request, jsonify, send_from_directory, abort, send_file, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from io import BytesIO
+import io
+import csv
 
 # -----------------------
 # App configuration
@@ -184,11 +189,8 @@ def find_ui_file(filename: str):
 
 @app.route("/", methods=["GET"])
 def index():
-    dirpath, fname = find_ui_file("landing.html")
-    if dirpath:
-        app.logger.info("Serving landing page from %s", dirpath)
-        return send_from_directory(dirpath, fname)
-    return jsonify({"message": "VisionX API running. Use /api/history or /ui/<page> to access shipped UIs."}), 200
+    # Direct access to the application hub, skipping the landing page.
+    return redirect("/ui/home")
 
 @app.route("/ui/<page>", methods=["GET"])
 def ui_page(page):
@@ -203,7 +205,8 @@ def ui_page(page):
         "scan": "scan.html",
         "settings": "settings.html",
         "access": "access.html",
-        "home": "home.html"
+        "home": "home.html",
+        "about": "about.html"
     }
     fname = mapping.get(page)
     if not fname:
@@ -306,6 +309,181 @@ def scan_file():
 def history():
     items = ScanHistory.query.order_by(ScanHistory.created_at.desc()).all()
     return jsonify([i.to_dict() for i in items])
+
+@app.route("/api/history/export/csv", methods=["GET"])
+def export_history_csv():
+    """Generates a CSV of all scan history and returns it as a downloadable file."""
+    records = ScanHistory.query.order_by(ScanHistory.created_at.desc()).all()
+    
+    # Create CSV in memory
+    si = BytesIO()
+    # Use TextIOWrapper to handle string writing for csv module
+    cw = csv.writer(pd := io.TextIOWrapper(si, encoding='utf-8', write_through=True))
+    
+    # Headers
+    cw.writerow(["Scan ID", "Scan Type", "Target", "Risk Score", "Risk Level", "Timestamp", "Detail Reasons"])
+    
+    # Data
+    for r in records:
+        cw.writerow([
+            r.id, 
+            r.scan_type, 
+            r.target, 
+            r.risk_score, 
+            r.risk_level, 
+            r.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            r.reasons
+        ])
+    
+    si.seek(0)
+    
+    # Flask send_file requires bytes for BytesIO, but CSV writer wraps text.
+    output = BytesIO()
+    output.write(b'\xef\xbb\xbf') # BOM
+    output.write(si.getvalue())
+    output.seek(0)
+
+    return send_file(
+        output,
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name=f"visionx_scan_history_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    )
+
+# -----------------------
+# Report generation
+# -----------------------
+from reportlab.lib import colors
+
+# -----------------------
+# Report generation
+# -----------------------
+@app.route("/api/report/<int:scan_id>", methods=["GET"])
+def generate_report(scan_id):
+    scan = ScanHistory.query.get(scan_id)
+    if not scan:
+        return jsonify({"error": "Scan record not found"}), 404
+
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+
+    # Header Background - Dark Teal/Blue
+    p.setFillColorRGB(0.06, 0.12, 0.13) # #111e21
+    p.rect(0, height - 100, width, 100, fill=1)
+
+    # Title - Cyan/Primary
+    p.setFillColorRGB(0.1, 0.76, 0.9) # #19c3e6
+    p.setFont("Helvetica-Bold", 24)
+    p.drawString(50, height - 60, "VisionX Security Scan Report")
+
+    p.setFillColor(colors.white)
+    p.setFont("Helvetica", 10)
+    p.drawString(50, height - 85, f"Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC")
+
+    # Reset to black for body
+    p.setFillColor(colors.black)
+
+    # Scan Details Section
+    y = height - 140
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(50, y, "Scan Details")
+    p.line(50, y - 5, 200, y - 5)
+    
+    y -= 30
+    p.setFont("Helvetica", 12)
+    p.drawString(50, y, f"Scan ID: {scan.id}")
+    y -= 20
+    p.drawString(50, y, f"Target: {scan.target}")
+    y -= 20
+    p.drawString(50, y, f"Scan Type: {scan.scan_type}")
+    
+    # Risk Assessment Section
+    y -= 40
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(50, y, "Risk Assessment")
+    p.line(50, y - 5, 200, y - 5)
+
+    y -= 30
+    p.setFont("Helvetica", 12)
+    p.drawString(50, y, "Risk Score:")
+    p.drawString(130, y, f"{scan.risk_score} / 100")
+    
+    y -= 20
+    p.drawString(50, y, "Risk Level:")
+    
+    # Color-coded Risk Level
+    if scan.risk_level == "Dangerous":
+        p.setFillColorRGB(0.88, 0.3, 0.3) # Red
+    elif scan.risk_level == "Suspicious":
+        p.setFillColorRGB(1.0, 0.84, 0.2) # Orange/Gold
+    else:
+        p.setFillColorRGB(0.3, 0.88, 0.3) # Green
+        
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(130, y, scan.risk_level.upper())
+    p.setFillColor(colors.black) # Reset
+
+    # Why this was flagged
+    y -= 50
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(50, y, "Findings & Analysis")
+    p.line(50, y - 5, 200, y - 5)
+    
+    y -= 25
+    p.setFont("Helvetica", 11)
+    reasons = json.loads(scan.reasons) if scan.reasons else []
+    if reasons:
+        for r in reasons:
+            p.drawString(60, y, f"• {r}")
+            y -= 18
+    else:
+        p.drawString(60, y, "No specific threats detected.")
+        y -= 18
+
+    # Recommended Actions
+    y -= 30
+    p.setFont("Helvetica-Bold", 14)
+    p.setFillColorRGB(0.1, 0.76, 0.9) # Primary color for header
+    p.drawString(50, y, "Recommended Actions")
+    p.setFillColor(colors.black)
+    
+    y -= 25
+    p.setFont("Helvetica", 11)
+
+    if scan.risk_level == "Dangerous":
+        p.drawString(60, y, "1. BLOCK this entity immediately in your firewall/gateway.")
+        y -= 18
+        p.drawString(60, y, "2. Do NOT interact or provide credentials.")
+        y -= 18
+        p.drawString(60, y, "3. Isolate any systems that may have accessed this target.")
+    elif scan.risk_level == "Suspicious":
+        p.drawString(60, y, "1. Treat with EXTREME CAUTION.")
+        y -= 18
+        p.drawString(60, y, "2. Verify the source through an alternative channel.")
+        y -= 18
+        p.drawString(60, y, "3. Do not download any attachments.")
+    else:
+        p.drawString(60, y, "1. No immediate action required based on current threat intel.")
+        y -= 18
+        p.drawString(60, y, "2. Standard security practices apply.")
+
+    # Footer
+    p.setFont("Helvetica-Oblique", 9)
+    p.setFillColor(colors.gray)
+    p.drawString(50, 30, "Confidential Property of VisionX Security Systems.")
+    p.drawRightString(width - 50, 30, f"Page 1 of 1")
+
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"visionx_report_{scan_id}.pdf",
+        mimetype="application/pdf"
+    )
 
 # -----------------------
 # Run app

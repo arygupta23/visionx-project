@@ -32,7 +32,7 @@
 </head>
 
 <body
-    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased min-h-screen flex flex-col items-center justify-between p-6 relative overflow-hidden">
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased min-h-screen flex flex-col items-center justify-between p-6 relative overflow-y-auto overflow-x-hidden">
 
     <!-- Background decorations -->
     <div class="fixed inset-0 pointer-events-none">
@@ -58,6 +58,7 @@
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left mb-16">
+                <!-- Links -->
                 <a href="/ui/dashboard"
                     class="group p-6 rounded-2xl bg-white dark:bg-panel border border-white/5 hover:border-primary/50 transition-all hover:-translate-y-1 hover:shadow-xl cursor-pointer">
                     <div
@@ -93,50 +94,22 @@
                 </a>
             </div>
 
-            <!-- About Section -->
-            <div
-                class="bg-white/5 dark:bg-panel/50 backdrop-blur-sm rounded-2xl p-8 border border-white/5 text-left mb-12">
-                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary">info</span>
-                    About VisionX Platform
-                </h3>
-                <p class="text-slate-400 mb-4 leading-relaxed">
-                    VisionX is a next-generation cybersecurity dashboard engineered for comprehensive threat management.
-                    It empowers security operations teams by integrating vulnerability scanning, threat intelligence,
-                    and automated reporting into a single, unified interface.
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-                    <div class="flex flex-col gap-2">
-                        <span class="font-bold text-slate-200">Real-time Detection</span>
-                        <span class="text-slate-500">Instant visibility into active risks and network
-                            vulnerabilities.</span>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <span class="font-bold text-slate-200">Unified Scanning</span>
-                        <span class="text-slate-500">Centralized engine for analyzing URLs, binaries, and email
-                            content.</span>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <span class="font-bold text-slate-200">Intelligent Reporting</span>
-                        <span class="text-slate-500">Automated generation of compliance data and threat
-                            assessments.</span>
-                    </div>
-                </div>
-            </div>
+
 
             <div class="flex justify-center gap-8 text-sm font-bold uppercase tracking-widest text-slate-600">
                 <a href="/ui/settings" class="hover:text-primary transition-colors">Settings</a>
                 <a href="/ui/access" class="hover:text-primary transition-colors">Access Control</a>
+                <a href="/ui/about" class="hover:text-primary transition-colors">About</a>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
     <footer class="relative z-10 w-full text-center py-6 mt-12 border-t border-white/5">
-        <p class="text-xs text-slate-500 font-mono">
-            VisionX Security Systems &copy; 2026. All systems operational.
-            <span class="mx-2">|</span>
-            <span class="text-primary/70">Encrypted Connection</span>
+        <p class="text-xs text-slate-500 font-mono uppercase tracking-widest">
+            VisionX Phishing Defense. Real-time Analysis Engine.
+            <span class="mx-2 text-primary">|</span>
+            &copy; 2026. All Systems Active <span class="mx-2 text-primary">|</span> Encrypted Connection
         </p>
     </footer>
 </body>

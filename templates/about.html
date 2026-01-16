@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>About VisionX Platform</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#19c3e6",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#111e21",
+                        "panel": "#1c2526",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased min-h-screen flex flex-col items-center justify-center p-6 relative overflow-y-auto overflow-x-hidden">
+
+    <!-- Background decorations -->
+    <div class="fixed inset-0 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[120px] rounded-full"></div>
+    </div>
+
+    <!-- Main container -->
+    <div class="relative z-10 w-full max-w-4xl">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <a href="/ui/home" class="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+                <span class="font-bold text-sm uppercase tracking-wider">Back to Home</span>
+            </a>
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-2xl">info</span>
+                <h1 class="text-2xl font-bold tracking-tight">System Information</h1>
+            </div>
+        </div>
+
+        <!-- About Content (Moved from Home) -->
+        <div
+            class="bg-white/5 dark:bg-panel/50 backdrop-blur-sm rounded-2xl p-10 border border-white/5 text-left mb-8 shadow-2xl">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+                About VisionX Platform
+            </h2>
+            <p class="text-slate-400 mb-6 leading-relaxed text-lg">
+                VisionX is a comprehensive threat detection platform engineered to safeguard organizations against
+                phishing attempts and malicious content. Whether analyzing suspicious URLs, inspecting email
+                communications, or vetting file attachments, the system delivers immediate, quantifiable risk
+                assessments. By classifying potential threats as Safe, Suspicious, or Dangerous, VisionX allows security
+                operations teams to prioritize their response effectively while maintaining a robust security posture.
+            </p>
+            <p class="text-slate-400 mb-8 leading-relaxed text-lg">
+                Crucially, VisionX moves beyond black-box detection by prioritizing two key capabilities:
+                <br><br>
+                <strong class="text-slate-200 block mb-2">1. Explainable Detection</strong>
+                Every analysis provides a clear, reason-based breakdown of why a specific URL, file, or email was
+                flagged—demystifying the "Dangerous" verdict.
+                <br><br>
+                <strong class="text-slate-200 block mb-2">2. Security Recommendations</strong>
+                Beyond just a score, the system offers concrete, actionable steps to remediate risks, such as blocking
+                domains or isolating affected assets.
+                <br><br>
+                Coupled with a persistent audit log, downloadable PDF reporting, and a centralized command dashboard,
+                VisionX provides the transparency essential for modern compliance.
+            </p>
+
+            <!-- Functional Navigation Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm mt-12 pt-8 border-t border-white/5">
+                <a href="/ui/dashboard"
+                    class="flex flex-col gap-2 p-4 rounded-xl hover:bg-white/5 border border-transparent hover:border-primary/30 transition-all cursor-pointer group">
+                    <div class="flex items-center gap-3">
+                        <span
+                            class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-2xl">dashboard</span>
+                        <span class="font-bold text-slate-200 group-hover:text-primary transition-colors">Real-time
+                            Detection</span>
+                    </div>
+                    <span class="text-slate-500">Instant visibility into active risks and network
+                        vulnerabilities.</span>
+                </a>
+
+                <a href="/ui/scan"
+                    class="flex flex-col gap-2 p-4 rounded-xl hover:bg-white/5 border border-transparent hover:border-primary/30 transition-all cursor-pointer group">
+                    <div class="flex items-center gap-3">
+                        <span
+                            class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-2xl">radar</span>
+                        <span class="font-bold text-slate-200 group-hover:text-primary transition-colors">Unified
+                            Scanning</span>
+                    </div>
+                    <span class="text-slate-500">Centralized engine for analyzing URLs, binaries, and email
+                        content.</span>
+                </a>
+
+                <a href="/ui/reports"
+                    class="flex flex-col gap-2 p-4 rounded-xl hover:bg-white/5 border border-transparent hover:border-primary/30 transition-all cursor-pointer group">
+                    <div class="flex items-center gap-3">
+                        <span
+                            class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-2xl">description</span>
+                        <span class="font-bold text-slate-200 group-hover:text-primary transition-colors">Intelligent
+                            Reporting</span>
+                    </div>
+                    <span class="text-slate-500">Automated generation of compliance data and threat assessments.</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="text-center mt-12 border-t border-white/5 pt-6">
+            <p class="text-xs text-slate-500 font-mono uppercase tracking-widest">
+                VisionX Phishing Defense. Real-time Analysis Engine. <br class="md:hidden" />
+                <span class="hidden md:inline mx-2 text-primary">|</span>
+                &copy; 2026. All Systems Active <span class="mx-2 text-primary">|</span> Encrypted Connection
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

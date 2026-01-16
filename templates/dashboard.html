@@ -248,12 +248,14 @@
                     <div class="p-6 border-b border-slate-200 dark:border-[#3c4f53] flex justify-between items-center">
                         <h3 class="text-lg font-bold tracking-tight">Live Activity Stream</h3>
                         <div class="flex gap-2">
-                            <button
-                                class="text-xs font-bold uppercase px-3 py-1 bg-slate-100 dark:bg-background-dark rounded border border-slate-200 dark:border-[#3c4f53] hover:text-primary transition-colors">Export
-                                CSV</button>
-                            <button
-                                class="text-xs font-bold uppercase px-3 py-1 bg-slate-100 dark:bg-background-dark rounded border border-slate-200 dark:border-[#3c4f53] hover:text-primary transition-colors">View
-                                All</button>
+                            <div class="flex gap-2">
+                                <button onclick="exportCSV()"
+                                    class="text-xs font-bold uppercase px-3 py-1 bg-slate-100 dark:bg-background-dark rounded border border-slate-200 dark:border-[#3c4f53] hover:text-primary transition-colors">Export
+                                    CSV</button>
+                                <a href="/ui/history"
+                                    class="text-xs font-bold uppercase px-3 py-1 bg-slate-100 dark:bg-background-dark rounded border border-slate-200 dark:border-[#3c4f53] hover:text-primary transition-colors flex items-center justify-center">View
+                                    All</a>
+                            </div>
                         </div>
                     </div>
                     <div class="overflow-x-auto">
@@ -271,14 +273,8 @@
                                     <th class="px-6 py-4 border-b border-slate-200 dark:border-[#3c4f53]">Action</th>
                                 </tr>
                             </thead>
-                            </td>
-                            <td class="px-6 py-4 text-xs">SMS Redirect</td>
-                            <td class="px-6 py-4 text-xs font-mono text-slate-500">2023-11-24 14:15:59</td>
-                            <td class="px-6 py-4">
-                                <button
-                                    class="material-symbols-outlined text-slate-400 hover:text-primary text-lg">open_in_new</button>
-                            </td>
-                            </tr>
+                            <tbody id="activity-stream-body">
+                                <!-- Populated by JS -->
                             </tbody>
                         </table>
                     </div>
@@ -296,14 +292,117 @@
                         </div>
                     </div>
                 </section>
-            </div>
+
+                <!-- Footnote / System Status -->
+                <footer class="flex items-center justify-between pt-4 opacity-60">
+                    <div class="text-slate-500 dark:text-[#9db4b8] text-[10px] font-medium tracking-wide">
+                        VisionX Phishing Defense. Real-time Analysis Engine. © 2026.
+                    </div>
+                    <div
+                        class="flex items-center gap-4 text-slate-500 dark:text-[#9db4b8] text-[10px] font-bold uppercase tracking-[0.2em]">
+                        <div class="flex items-center gap-2">
+                            <span class="size-1.5 rounded-full bg-success"></span>
+                            All Systems Active | Encrypted Connection
+                        </div>
+                    </div>
+                </footer>
         </main>
     </div>
     <script>
+        let globalScanData = [];
+
+        function closeExplainability() {
+            const modal = document.getElementById('explainability-modal');
+            const panel = document.getElementById('explainability-panel');
+            panel.classList.add('translate-x-full');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function openExplainability(id) {
+            const item = globalScanData.find(d => d.id === id);
+            if (!item) return;
+
+            // Populate Fields
+            document.getElementById('modal-scan-id').textContent = item.id;
+            document.getElementById('modal-score').textContent = item.risk_score;
+            document.getElementById('modal-risk-level').textContent = item.risk_level;
+            document.getElementById('modal-type').textContent = item.scan_type;
+            document.getElementById('modal-timestamp').textContent = new Date(item.created_at).toLocaleString();
+            document.getElementById('modal-target').textContent = item.target;
+
+            // Color Logic
+            const ring = document.getElementById('modal-ring');
+            const level = document.getElementById('modal-risk-level');
+
+            ring.className = `size-32 rounded-full border-8 flex items-center justify-center mb-4 relative transition-all duration-700 ${item.risk_level === 'Dangerous' ? 'border-danger/30 text-danger' :
+                item.risk_level === 'Suspicious' ? 'border-warning/30 text-warning' :
+                    'border-success/30 text-success'}`;
+
+            level.className = `text-xl font-black uppercase tracking-widest ${item.risk_level === 'Dangerous' ? 'text-danger' :
+                item.risk_level === 'Suspicious' ? 'text-warning' :
+                    'text-success'}`;
+
+            // Reasons
+            const reasonsList = document.getElementById('modal-reasons');
+            reasonsList.innerHTML = '';
+            let reasons = [];
+            if (typeof item.reasons === 'string') {
+                try { reasons = JSON.parse(item.reasons); } catch (e) { reasons = [item.reasons]; }
+            } else {
+                reasons = item.reasons || [];
+            }
+
+            if (reasons.length === 0) {
+                reasonsList.innerHTML = `<li class="text-slate-500 text-sm italic">No specific threats detected.</li>`;
+            } else {
+                reasons.forEach(r => {
+                    reasonsList.innerHTML += `
+                        <li class="flex items-start gap-3 text-sm text-slate-300 bg-black/20 p-3 rounded border border-white/5">
+                            <span class="material-symbols-outlined text-primary text-base mt-0.5">info</span>
+                            ${r}
+                        </li>`;
+                });
+            }
+
+            // Recommendations
+            const actionList = document.getElementById('modal-actions');
+            actionList.innerHTML = '';
+            if (item.risk_level === 'Dangerous') {
+                actionList.innerHTML = `
+                    <li class="flex items-center gap-2"><span class="text-danger material-symbols-outlined text-sm">block</span> Do not interact with this entity.</li>
+                    <li class="flex items-center gap-2"><span class="text-danger material-symbols-outlined text-sm">gpp_bad</span> Block source IP/Domain immediately.</li>
+                    <li class="flex items-center gap-2"><span class="text-danger material-symbols-outlined text-sm">report</span> Report to SOC team.</li>
+                `;
+            } else if (item.risk_level === 'Suspicious') {
+                actionList.innerHTML = `
+                    <li class="flex items-center gap-2"><span class="text-warning material-symbols-outlined text-sm">warning</span> Verify source identity manually.</li>
+                    <li class="flex items-center gap-2"><span class="text-warning material-symbols-outlined text-sm">search</span> Scan specifically for malware.</li>
+                `;
+            } else {
+                actionList.innerHTML = `
+                    <li class="flex items-center gap-2"><span class="text-success material-symbols-outlined text-sm">check_circle</span> No immediate action required.</li>
+                    <li class="flex items-center gap-2"><span class="text-success material-symbols-outlined text-sm">update</span> Standard monitoring applies.</li>
+                `;
+            }
+
+            // Show Modal
+            const modal = document.getElementById('explainability-modal');
+            const panel = document.getElementById('explainability-panel');
+            modal.classList.remove('hidden');
+            // Small delay to allow display:block to apply before transition
+            setTimeout(() => {
+                panel.classList.remove('translate-x-full');
+            }, 10);
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
             fetch("/api/history")
                 .then(res => res.json())
                 .then(data => {
+                    globalScanData = data; // Store globally
+
                     // Update main stats
                     const total = data.length;
                     const high = data.filter(d => d.risk_level === 'Dangerous').length;
@@ -416,10 +515,175 @@
                         }
                     });
 
+
+                    // --- POPULATE LIVE ACTIVITY STREAM ---
+                    const streamBody = document.getElementById('activity-stream-body');
+                    streamBody.innerHTML = '';
+
+                    data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    const recentScans = data.slice(0, 5);
+
+                    if (recentScans.length === 0) {
+                        streamBody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-slate-500">No activity recorded.</td></tr>`;
+                    } else {
+                        recentScans.forEach(item => {
+                            let riskColor = "text-success";
+                            if (item.risk_level === 'Dangerous') riskColor = "text-danger";
+                            else if (item.risk_level === 'Suspicious') riskColor = "text-warning";
+
+                            const row = `
+                                <tr class="border-b border-slate-100 dark:border-[#3c4f53] hover:bg-slate-50 dark:hover:bg-panel/50 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <span class="font-mono text-xs text-primary">#${item.id}</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-slate-400 text-sm">
+                                                ${item.scan_type === 'URL' ? 'link' : item.scan_type === 'EMAIL' ? 'mail' : 'description'}
+                                            </span>
+                                            <span class="text-xs font-bold truncate max-w-[150px] inline-block" title="${item.target}">${item.target}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-xs font-bold ${riskColor} uppercase tracking-wider">${item.risk_level}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-xs font-mono uppercase text-slate-500">
+                                        ${item.scan_type}
+                                    </td>
+                                    <td class="px-6 py-4 text-xs font-mono text-slate-500">
+                                        ${new Date(item.created_at).toLocaleString()}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <button onclick="openExplainability(${item.id})" class="text-slate-400 hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined text-lg">visibility</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                            streamBody.innerHTML += row;
+                        });
+                    }
                 })
                 .catch(err => console.error(err));
         });
+
+        function exportCSV() {
+            window.location.href = "/api/history/export/csv";
+        }
+
+        function downloadPDF() {
+            const id = document.getElementById('modal-scan-id').textContent;
+            if (!id || id === '--') return;
+            window.location.href = `/api/report/${id}`;
+        }
     </script>
+
+    <!-- Explainability Panel Modal -->
+    <div id="explainability-modal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog"
+        aria-modal="true">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onclick="closeExplainability()">
+        </div>
+
+        <!-- Panel -->
+        <div class="absolute inset-y-0 right-0 w-full max-w-2xl bg-background-dark border-l border-[#3c4f53] shadow-2xl transform transition-transform duration-300 ease-in-out translate-x-full overflow-y-auto"
+            id="explainability-panel">
+            <div class="p-8 space-y-8">
+                <!-- Header -->
+                <div class="flex items-center justify-between pb-6 border-b border-[#3c4f53]">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">security_search</span>
+                            Security Analysis
+                        </h2>
+                        <p class="text-sm text-slate-400 mt-1">Detailed explainability report for Scan #<span
+                                id="modal-scan-id" class="font-mono text-primary">--</span></p>
+                        <div class="mt-4">
+                            <button onclick="downloadPDF()"
+                                class="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded text-xs font-bold uppercase tracking-wider transition-colors border border-slate-600 shadow-sm">
+                                <span class="material-symbols-outlined text-sm">picture_as_pdf</span>
+                                Download PDF Report
+                            </button>
+                        </div>
+                    </div>
+                    <button onclick="closeExplainability()" class="text-slate-400 hover:text-white transition-colors">
+                        <span class="material-symbols-outlined text-3xl">close</span>
+                    </button>
+                </div>
+
+                <!-- Score & Status Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div
+                        class="bg-panel rounded-xl p-6 border border-[#3c4f53] flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none">
+                        </div>
+                        <div class="relative z-10">
+                            <div id="modal-ring"
+                                class="size-32 rounded-full border-8 border-slate-700 flex items-center justify-center mb-4 relative transition-all duration-700">
+                                <span id="modal-score" class="text-4xl font-black text-white">0</span>
+                                <div class="absolute inset-0 border-8 border-current rounded-full opacity-20"></div>
+                            </div>
+                            <h3 id="modal-risk-level"
+                                class="text-xl font-black uppercase tracking-widest text-slate-300">UNKNOWN</h3>
+                            <p class="text-xs text-slate-500 font-mono mt-1 mb-4">Risk Confidence Score</p>
+
+                            <div
+                                class="flex gap-2 text-xs font-mono text-slate-400 bg-background-dark/50 px-3 py-1.5 rounded-full border border-[#3c4f53]">
+                                <span id="modal-type" class="uppercase text-primary font-bold">TYPE</span>
+                                <span>|</span>
+                                <span id="modal-timestamp">YYYY-MM-DD</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="bg-panel rounded-xl p-6 border border-[#3c4f53]">
+                            <h3
+                                class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-[#3c4f53] pb-2 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-sm">target</span>
+                                Target Analysis
+                            </h3>
+                            <p id="modal-target" class="font-mono text-sm text-primary break-all mb-2">---</p>
+                            <p class="text-xs text-slate-500 leading-relaxed">
+                                The content provided was analyzed by our heuristic engine. Below are the specific
+                                indicators that triggered this classification.
+                            </p>
+                        </div>
+
+                        <div id="modal-action-box" class="bg-panel rounded-xl p-6 border border-[#3c4f53]">
+                            <h3
+                                class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-[#3c4f53] pb-2 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">verified_user</span>
+                                Recommended Action
+                            </h3>
+                            <ul id="modal-actions" class="space-y-2 text-sm text-slate-300">
+                                <!-- JS Populated -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deep Dive / Reasons -->
+                <div class="bg-panel rounded-xl border border-[#3c4f53] overflow-hidden">
+                    <div
+                        class="bg-background-dark/50 px-6 py-4 border-b border-[#3c4f53] flex items-center justify-between">
+                        <h3 class="font-bold text-white flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">psychology</span>
+                            Why This Was Flagged
+                        </h3>
+                        <span class="text-xs font-mono text-slate-500 uppercase tracking-widest">Heuristic Logic</span>
+                    </div>
+                    <div class="p-6">
+                        <ul id="modal-reasons" class="space-y-3">
+                            <!-- JS Populated -->
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
