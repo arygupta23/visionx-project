@@ -159,7 +159,8 @@
                     <!-- File Form -->
                     <div id="form-file"
                         class="hidden bg-white dark:bg-panel p-6 rounded border border-slate-200 dark:border-[#3c4f53]">
-                        <div class="border-2 border-dashed border-slate-300 dark:border-[#3c4f53] roundedxl p-8 text-center hover:border-primary transition-colors cursor-pointer"
+                        <div id="drop-zone"
+                            class="border-2 border-dashed border-slate-300 dark:border-[#3c4f53] roundedxl p-8 text-center hover:border-primary transition-colors cursor-pointer"
                             onclick="document.getElementById('input-file').click()">
                             <span class="material-symbols-outlined text-4xl text-slate-400 mb-2">cloud_upload</span>
                             <p class="text-sm font-bold">Click to upload or drag and drop</p>
@@ -355,6 +356,81 @@
             }
             window.location.href = `/api/report/${currentScanData.id}`;
         }
+
+        // --- Drag and Drop Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('input-file');
+            const fileNameDisplay = document.getElementById('file-name');
+
+            // Global prevent default to stop browser from opening files
+            window.addEventListener('dragover', e => e.preventDefault(), false);
+            window.addEventListener('drop', e => e.preventDefault(), false);
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                dropZone.classList.add('border-primary', 'bg-primary/5');
+                if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+            }
+
+            function unhighlight(e) {
+                dropZone.classList.remove('border-primary', 'bg-primary/5');
+            }
+
+            dropZone.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+
+                if (files.length > 0) {
+                    handleFiles(files);
+                    return;
+                }
+
+                // If no file, check for URL/Text
+                const droppedUrl = dt.getData('text/uri-list') || dt.getData('text/plain');
+                if (droppedUrl && (droppedUrl.startsWith('http') || droppedUrl.startsWith('www'))) {
+                    // It's a URL! Switch to URL tab and populate
+                    switchTab('url');
+                    document.getElementById('input-url').value = droppedUrl;
+
+                    // Visual feedback
+                    const urlInput = document.getElementById('input-url');
+                    urlInput.classList.add('ring-2', 'ring-primary');
+                    setTimeout(() => urlInput.classList.remove('ring-2', 'ring-primary'), 1000);
+
+                    alert(`Detected URL launch: ${droppedUrl}\nSwitched to URL Analysis mode.`);
+                    return;
+                }
+
+                alert("No valid file or URL detected. Please download the file first, or drag a valid link.");
+            }
+
+            function handleFiles(files) {
+                if (files.length > 0) {
+                    fileInput.files = files; // Assign dropped files to input
+                    fileNameDisplay.textContent = "Selected: " + files[0].name;
+                    fileNameDisplay.classList.add('text-success', 'font-bold');
+                }
+            }
+        });
     </script>
 </body>
 
