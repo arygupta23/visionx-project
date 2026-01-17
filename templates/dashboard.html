@@ -280,14 +280,14 @@
                     </div>
                     <div
                         class="px-6 py-4 bg-slate-50 dark:bg-background-dark/10 flex items-center justify-between text-xs font-bold text-slate-500">
-                        <span>Showing 4 of 2,901 entries</span>
+                        <span id="pagination-info">Showing 0 of 0 entries</span>
                         <div class="flex gap-1">
-                            <button class="p-1 hover:text-primary"><span
+                            <button id="btn-prev"
+                                class="p-1 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed"><span
                                     class="material-symbols-outlined text-sm">chevron_left</span></button>
-                            <span class="px-2 py-1 bg-primary/10 text-primary rounded">1</span>
-                            <button class="px-2 py-1 hover:bg-slate-200 dark:hover:bg-panel rounded">2</button>
-                            <button class="px-2 py-1 hover:bg-slate-200 dark:hover:bg-panel rounded">3</button>
-                            <button class="p-1 hover:text-primary"><span
+                            <div id="pagination-pages" class="flex gap-1"></div>
+                            <button id="btn-next"
+                                class="p-1 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed"><span
                                     class="material-symbols-outlined text-sm">chevron_right</span></button>
                         </div>
                     </div>
@@ -397,11 +397,17 @@
             }, 10);
         }
 
+        let currentPage = 1;
+        const rowsPerPage = 5;
+
         document.addEventListener("DOMContentLoaded", function () {
             fetch("/api/history")
                 .then(res => res.json())
                 .then(data => {
                     globalScanData = data; // Store globally
+
+                    // Sort data by date descending (newest first)
+                    globalScanData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
                     // Update main stats
                     const total = data.length;
@@ -419,10 +425,6 @@
                     // --- PROCESS DATA FOR CHARTS ---
 
                     // 1. Threat Distribution (Group by Date)
-                    // Simplify: Just count scans per day (or hour if strictly realtime) for the last 7 items or so
-                    // Since specific dates might be sparse, let's just show "Last 7 Scans" risk scores or similar
-                    // Actually, let's group by date properly (last 7 days)
-
                     const last7Days = {};
                     for (let i = 6; i >= 0; i--) {
                         const d = new Date();
@@ -453,7 +455,6 @@
                     }
 
                     // --- RENDER CHARTS ---
-
                     // Threat Chart (Line)
                     const ctxThreat = document.getElementById('threatChart').getContext('2d');
                     new Chart(ctxThreat, {
@@ -516,56 +517,120 @@
                     });
 
 
-                    // --- POPULATE LIVE ACTIVITY STREAM ---
-                    const streamBody = document.getElementById('activity-stream-body');
-                    streamBody.innerHTML = '';
+                    // --- INITIAL TABLE RENDER ---
+                    renderTable(1);
 
-                    data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                    const recentScans = data.slice(0, 5);
+                    // Wire up pagination buttons
+                    document.getElementById('btn-prev').addEventListener('click', () => {
+                        if (currentPage > 1) renderTable(currentPage - 1);
+                    });
 
-                    if (recentScans.length === 0) {
-                        streamBody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-slate-500">No activity recorded.</td></tr>`;
-                    } else {
-                        recentScans.forEach(item => {
-                            let riskColor = "text-success";
-                            if (item.risk_level === 'Dangerous') riskColor = "text-danger";
-                            else if (item.risk_level === 'Suspicious') riskColor = "text-warning";
-
-                            const row = `
-                                <tr class="border-b border-slate-100 dark:border-[#3c4f53] hover:bg-slate-50 dark:hover:bg-panel/50 transition-colors">
-                                    <td class="px-6 py-4">
-                                        <span class="font-mono text-xs text-primary">#${item.id}</span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center gap-2">
-                                            <span class="material-symbols-outlined text-slate-400 text-sm">
-                                                ${item.scan_type === 'URL' ? 'link' : item.scan_type === 'EMAIL' ? 'mail' : 'description'}
-                                            </span>
-                                            <span class="text-xs font-bold truncate max-w-[150px] inline-block" title="${item.target}">${item.target}</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="text-xs font-bold ${riskColor} uppercase tracking-wider">${item.risk_level}</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-xs font-mono uppercase text-slate-500">
-                                        ${item.scan_type}
-                                    </td>
-                                    <td class="px-6 py-4 text-xs font-mono text-slate-500">
-                                        ${new Date(item.created_at).toLocaleString()}
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <button onclick="openExplainability(${item.id})" class="text-slate-400 hover:text-primary transition-colors">
-                                            <span class="material-symbols-outlined text-lg">visibility</span>
-                                        </button>
-                                    </td>
-                                </tr>
-                            `;
-                            streamBody.innerHTML += row;
-                        });
-                    }
+                    document.getElementById('btn-next').addEventListener('click', () => {
+                        const totalPages = Math.ceil(globalScanData.length / rowsPerPage);
+                        if (currentPage < totalPages) renderTable(currentPage + 1);
+                    });
                 })
                 .catch(err => console.error(err));
         });
+
+        function renderTable(page) {
+            currentPage = page;
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const pageData = globalScanData.slice(start, end);
+            const totalItems = globalScanData.length;
+
+            const streamBody = document.getElementById('activity-stream-body');
+            streamBody.innerHTML = '';
+
+            if (pageData.length === 0) {
+                streamBody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-slate-500">No activity recorded.</td></tr>`;
+            } else {
+                pageData.forEach(item => {
+                    let riskColor = "text-success";
+                    if (item.risk_level === 'Dangerous') riskColor = "text-danger";
+                    else if (item.risk_level === 'Suspicious') riskColor = "text-warning";
+
+                    const row = `
+                        <tr class="border-b border-slate-100 dark:border-[#3c4f53] hover:bg-slate-50 dark:hover:bg-panel/50 transition-colors">
+                            <td class="px-6 py-4">
+                                <span class="font-mono text-xs text-primary">#${item.id}</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-slate-400 text-sm">
+                                        ${item.scan_type === 'URL' ? 'link' : item.scan_type === 'EMAIL' ? 'mail' : 'description'}
+                                    </span>
+                                    <span class="text-xs font-bold truncate max-w-[150px] inline-block" title="${item.target}">${item.target}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-xs font-bold ${riskColor} uppercase tracking-wider">${item.risk_level}</span>
+                            </td>
+                            <td class="px-6 py-4 text-xs font-mono uppercase text-slate-500">
+                                ${item.scan_type}
+                            </td>
+                            <td class="px-6 py-4 text-xs font-mono text-slate-500">
+                                ${new Date(item.created_at).toLocaleString()}
+                            </td>
+                            <td class="px-6 py-4">
+                                <button onclick="openExplainability(${item.id})" class="text-slate-400 hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined text-lg">visibility</span>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    streamBody.innerHTML += row;
+                });
+            }
+
+            updatePaginationInfo(start + 1, Math.min(end, totalItems), totalItems);
+            updatePaginationControls(Math.ceil(totalItems / rowsPerPage));
+        }
+
+        function updatePaginationInfo(start, end, total) {
+            const infoText = total === 0
+                ? 'Showing 0 of 0 entries'
+                : `Showing ${start} to ${end} of ${total.toLocaleString()} entries`;
+            document.getElementById('pagination-info').textContent = infoText;
+        }
+
+        function updatePaginationControls(totalPages) {
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            const pagesContainer = document.getElementById('pagination-pages');
+
+            btnPrev.disabled = currentPage === 1;
+            btnNext.disabled = currentPage === totalPages || totalPages === 0;
+
+            // Simple page buttons logic (showing mostly current, first, last etc would be better but simple list is fine for now)
+            // Let's just show current page number styling for now or small interactive list
+            pagesContainer.innerHTML = '';
+
+            // Logic to show limited page numbers (e.g. 1, ... 4, 5, 6, ... 10)
+            let pagesToShow = [];
+            if (totalPages <= 5) {
+                pagesToShow = Array.from({ length: totalPages }, (_, i) => i + 1);
+            } else {
+                if (currentPage <= 3) {
+                    pagesToShow = [1, 2, 3, 4, 5]; // Simplified for now
+                } else if (currentPage >= totalPages - 2) {
+                    pagesToShow = [totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+                } else {
+                    pagesToShow = [currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2];
+                }
+            }
+
+            pagesToShow.forEach(p => {
+                if (p > 0 && p <= totalPages) {
+                    const btn = document.createElement('button');
+                    btn.textContent = p;
+                    btn.className = `px-2 py-1 rounded text-xs font-bold ${p === currentPage ? 'bg-primary/10 text-primary' : 'hover:bg-slate-200 dark:hover:bg-panel text-slate-500'}`;
+                    btn.onclick = () => renderTable(p);
+                    pagesContainer.appendChild(btn);
+                }
+            });
+        }
 
         function exportCSV() {
             window.location.href = "/api/history/export/csv";
