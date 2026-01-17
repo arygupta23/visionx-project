@@ -20,6 +20,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from io import BytesIO
 import io
+import socket
 import csv
 
 # -----------------------
@@ -80,6 +81,28 @@ def valid_url(url):
     except Exception:
         return False
 
+def check_domain_exists(domain):
+    """
+    Verifies if a domain actually exists via DNS resolution.
+    Returns True if exists, False otherwise.
+    """
+    try:
+        # Set a short timeout for the DNS lookup
+        original_timeout = socket.getdefaulttimeout()
+        socket.setdefaulttimeout(3.0)
+        try:
+            socket.gethostbyname(domain)
+            return True
+        finally:
+            socket.setdefaulttimeout(original_timeout)
+    except socket.error:
+        return False
+
+SUSPICIOUS_WORDS = [
+    "login", "verify", "account", "bank", "password",
+    "urgent", "click", "secure", "confirm"
+]
+
 SUSPICIOUS_WORDS = [
     "login", "verify", "account", "bank", "password",
     "urgent", "click", "secure", "confirm"
@@ -90,37 +113,43 @@ SUSPICIOUS_WORDS = [
 # -----------------------
 def score_url(url: str):
     """
-    Enhanced URL scoring:
-    - keeps previous checks (length, HTTPS, suspicious keywords)
-    - detects tracking/affiliate params (utm_ / aff / ref / track / clickid etc.)
-    - penalizes long query strings and many query params
-    - detects embedded redirectors and double-extensions in path
-    - simulated low-reputation domain check (unchanged)
+    Enhanced URL scoring with real-world existence check.
     """
     import urllib.parse
 
     reasons = []
     score = 0
-    score = 0
     
+    # 1. Length Check
     if len(url) > 75:
         score += 15
         reasons.append("Long URL")
 
+    # 2. Protocol Check
     if not url.lower().startswith("https://"):
-        score += 20
-        reasons.append("No HTTPS")
+        score += 35
+        reasons.append("No HTTPS (Insecure)")
 
+    # 3. Keyword Check
     for w in SUSPICIOUS_WORDS:
         if w in url.lower():
             score += 10
             reasons.append(f"Suspicious keyword: {w}")
 
+    # 4. Domain Existence Check (Real World)
     domain = urlparse(url).netloc
-    h = int(hashlib.sha256(domain.encode()).hexdigest(), 16)
-    if h % 10 < 3:
-        score += 25
-        reasons.append("Low reputation domain (simulated)")
+    # Strip port if present for DNS check
+    dns_domain = domain.split(':')[0]
+    
+    if not check_domain_exists(dns_domain):
+        score += 100 # Immediate Danger/Block
+        reasons.append(f"Domain '{dns_domain}' does not exist (DNS lookup failed)")
+    else:
+        # Only do reputation check if domain actually exists
+        h = int(hashlib.sha256(domain.encode()).hexdigest(), 16)
+        if h % 10 < 3:
+            score += 25
+            reasons.append("Low reputation domain (simulated)")
 
     return clamp(score), reasons
 
@@ -131,11 +160,30 @@ def score_email(sender, content):
     if "@" not in sender:
         score += 30
         reasons.append("Invalid sender address")
+    else:
+        # Check domain existence for email
+        domain = sender.split('@')[-1]
+        if not check_domain_exists(domain):
+            score += 100
+            reasons.append(f"Email domain '{domain}' does not exist (DNS lookup failed)")
 
     for w in SUSPICIOUS_WORDS:
         if w in content.lower():
             score += 10
             reasons.append(f"Suspicious phrase: {w}")
+
+    # Extract and scan URLs in content
+    # Regex to find http/https URLs
+    urls = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+[^\s]*', content)
+    
+    if urls:
+        for url in urls:
+            url_score, url_reasons = score_url(url)
+            if url_score > 0:
+                score += url_score
+                # Add context to reasons
+                for r in url_reasons:
+                    reasons.append(f"Link '{url}': {r}")
 
     return clamp(score), reasons
 
@@ -152,10 +200,26 @@ def score_file(filename, data):
     if len(data) < 1024:
         score += 10
         reasons.append("Very small file")
-
-    if random.randint(1, 100) <= 5:
-        score += 20
-        reasons.append("Random heuristic triggered")
+        
+    # Attempt to scan content for URLs if it looks like text
+    try:
+        # Try decoding as UTF-8 to see if it's a text file
+        text_content = data.decode('utf-8')
+        
+        # Regex to find http/https URLs
+        urls = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+[^\s]*', text_content)
+        
+        if urls:
+            for url in urls:
+                url_score, url_reasons = score_url(url)
+                if url_score > 0:
+                    score += url_score
+                    for r in url_reasons:
+                        reasons.append(f"Linked URL '{url}': {r}")
+                        
+    except UnicodeDecodeError:
+        # Not a text file (binary), skip checking content for links
+        pass
 
     return clamp(score), reasons, sha256
 
