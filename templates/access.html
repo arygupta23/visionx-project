@@ -67,6 +67,9 @@
                     href="/ui/access"><span class="material-symbols-outlined text-[20px] fill-1">group</span><span
                         class="text-sm font-medium">Access Control</span></a>
                 <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                    href="/ui/profile"><span class="material-symbols-outlined text-[20px]">account_circle</span><span
+                        class="text-sm font-medium">My Profile</span></a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
                     href="/ui/settings"><span class="material-symbols-outlined text-[20px]">settings</span><span
                         class="text-sm font-medium">Settings</span></a>
             </nav>
@@ -79,7 +82,8 @@
                 <h1 class="text-2xl font-bold">Access Control</h1>
                 <p class="text-slate-500">Manage users and permissions.</p>
             </div>
-            <button class="px-4 py-2 bg-primary text-background-dark font-bold rounded flex items-center gap-2">
+            <button onclick="document.getElementById('invite-modal').classList.remove('hidden')"
+                class="px-4 py-2 bg-primary text-background-dark font-bold rounded flex items-center gap-2 hover:bg-primary/90 transition-colors">
                 <span class="material-symbols-outlined text-sm">person_add</span>
                 Invite User
             </button>
@@ -96,33 +100,8 @@
                             Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-700">
-                    <tr>
-                        <td class="px-6 py-4 flex items-center gap-3">
-                            <div
-                                class="size-8 rounded-full bg-primary flex items-center justify-center text-background-dark font-bold">
-                                AC</div>
-                            <div class="font-bold">Admin User</div>
-                        </td>
-                        <td class="px-6 py-4"><span
-                                class="px-2 py-1 rounded bg-slate-700 text-xs font-bold">Administrator</span></td>
-                        <td class="px-6 py-4 text-success font-bold text-xs uppercase">Active</td>
-                        <td class="px-6 py-4 text-right"><button class="text-slate-500 hover:text-primary">Edit</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-6 py-4 flex items-center gap-3">
-                            <div
-                                class="size-8 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold">
-                                JD</div>
-                            <div class="font-bold">John Doe</div>
-                        </td>
-                        <td class="px-6 py-4"><span
-                                class="px-2 py-1 rounded bg-slate-700 text-xs font-bold">Analyst</span></td>
-                        <td class="px-6 py-4 text-success font-bold text-xs uppercase">Active</td>
-                        <td class="px-6 py-4 text-right"><button class="text-slate-500 hover:text-primary">Edit</button>
-                        </td>
-                    </tr>
+                <tbody id="users-table-body" class="divide-y divide-slate-700">
+                    <!-- JS Populated -->
                 </tbody>
             </table>
         </div>
@@ -139,6 +118,289 @@
             </div>
         </footer>
     </main>
+
+    <!-- Invite User Modal -->
+    <div id="invite-modal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+        <div
+            class="bg-panel border border-[#3c4f53] rounded-xl p-6 w-full max-w-md shadow-2xl transform transition-all scale-100">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-white">Invite New User</h3>
+                <button onclick="document.getElementById('invite-modal').classList.add('hidden')"
+                    class="text-slate-400 hover:text-white">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Full
+                        Name</label>
+                    <input id="new-name" type="text"
+                        class="w-full bg-background-dark border border-slate-700 rounded p-2 text-white focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-600"
+                        placeholder="e.g. Sarah Connor">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Role</label>
+                    <select id="new-role"
+                        class="w-full bg-background-dark border border-slate-700 rounded p-2 text-white focus:ring-1 focus:ring-primary focus:border-primary">
+                        <option value="Analyst">Analyst</option>
+                        <option value="Administrator">Administrator</option>
+                        <option value="Viewer">Viewer</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Email
+                        Address</label>
+                    <input id="new-email" type="email"
+                        class="w-full bg-background-dark border border-slate-700 rounded p-2 text-white focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-600"
+                        placeholder="e.g. sarah@visionx.security">
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end gap-3">
+                <button onclick="document.getElementById('invite-modal').classList.add('hidden')"
+                    class="px-4 py-2 rounded text-slate-400 font-bold hover:text-white transition-colors">Cancel</button>
+                <button onclick="createUser()"
+                    class="px-4 py-2 bg-primary text-background-dark font-bold rounded hover:bg-primary/90 transition-colors">Send
+                    Invite</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="edit-modal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+        <div
+            class="bg-panel border border-[#3c4f53] rounded-xl p-6 w-full max-w-md shadow-2xl transform transition-all scale-100">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-white">Edit User</h3>
+                <button onclick="document.getElementById('edit-modal').classList.add('hidden')"
+                    class="text-slate-400 hover:text-white">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <input type="hidden" id="edit-id">
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Full
+                        Name</label>
+                    <input id="edit-name" type="text"
+                        class="w-full bg-background-dark border border-slate-700 rounded p-2 text-white focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Role</label>
+                    <select id="edit-role"
+                        class="w-full bg-background-dark border border-slate-700 rounded p-2 text-white focus:ring-1 focus:ring-primary focus:border-primary">
+                        <option value="Analyst">Analyst</option>
+                        <option value="Administrator">Administrator</option>
+                        <option value="Viewer">Viewer</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Email
+                        Address</label>
+                    <input id="edit-email" type="email"
+                        class="w-full bg-background-dark border border-slate-700 rounded p-2 text-white focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Status</label>
+                    <select id="edit-status"
+                        class="w-full bg-background-dark border border-slate-700 rounded p-2 text-white focus:ring-1 focus:ring-primary focus:border-primary">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end gap-3">
+                <button onclick="document.getElementById('edit-modal').classList.add('hidden')"
+                    class="px-4 py-2 rounded text-slate-400 font-bold hover:text-white transition-colors">Cancel</button>
+                <button onclick="updateUser()"
+                    class="px-4 py-2 bg-primary text-background-dark font-bold rounded hover:bg-primary/90 transition-colors">Save
+                    Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let globalUsers = [];
+
+        document.addEventListener("DOMContentLoaded", function () {
+            fetchUsers();
+        });
+
+        function fetchUsers() {
+            fetch('/api/users')
+                .then(res => res.json())
+                .then(data => {
+                    globalUsers = data;
+                    renderUsers(data);
+
+                    // Update Sidebar Profile too
+                    const me = data.find(u => u.name === "Admin User") || data[0];
+                    if (me) updateSidebarProfile(me);
+                })
+                .catch(err => console.error(err));
+        }
+
+        function updateSidebarProfile(user) {
+            const nameEl = document.getElementById('sidebar-name');
+            const roleEl = document.getElementById('sidebar-role');
+            const initialsEl = document.getElementById('sidebar-initials');
+            const avatarEl = document.getElementById('sidebar-avatar');
+
+            if (nameEl) nameEl.textContent = user.name;
+            if (roleEl) roleEl.textContent = user.role;
+
+            if (user.avatar && avatarEl) {
+                avatarEl.src = user.avatar;
+                avatarEl.classList.remove('hidden');
+                if (initialsEl) initialsEl.classList.add('hidden');
+            } else if (initialsEl) {
+                initialsEl.textContent = user.initials;
+                initialsEl.classList.remove('hidden');
+                if (avatarEl) avatarEl.classList.add('hidden');
+            }
+        }
+
+        // Ensure functions are global
+        window.createUser = createUser;
+        window.openEdit = openEdit;
+        window.updateUser = updateUser;
+        window.deleteUser = deleteUser;
+
+        function renderUsers(users) {
+            const tbody = document.getElementById("users-table-body");
+            let rows = "";
+
+            users.forEach(user => {
+                const statusColor = user.status === 'Active' ? 'text-success' : 'text-slate-500';
+                const statusDot = user.status === 'Active' ? 'bg-success animate-pulse' : 'bg-slate-500';
+
+                // Avatar or Initials logic
+                let avatarHtml = '';
+                if (user.avatar) {
+                    avatarHtml = `<img src="${user.avatar}" class="size-8 rounded-full object-cover ring-2 ring-transparent group-hover:ring-white/20 transition-all">`;
+                } else {
+                    avatarHtml = `
+                        <div class="size-8 rounded-full ${user.color} flex items-center justify-center text-white font-bold text-xs ring-2 ring-transparent group-hover:ring-white/20 transition-all">
+                            ${user.initials}
+                        </div>
+                    `;
+                }
+
+                rows += `
+                    <tr class="group hover:bg-slate-800/50 transition-colors">
+                        <td class="px-6 py-4 flex items-center gap-3">
+                            ${avatarHtml}
+                            <div class="font-bold text-slate-900 dark:text-slate-200">${user.name}</div>
+                            <div class="text-[10px] text-slate-500 font-mono">${user.email || 'No email'}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 rounded bg-slate-700/50 border border-slate-600 text-xs font-bold text-slate-300">
+                                ${user.role}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2">
+                                <span class="size-1.5 rounded-full ${statusDot}"></span>
+                                <span class="${statusColor} font-bold text-xs uppercase tracking-wider">${user.status}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <div class="flex justify-end gap-2 transition-opacity">
+                                <button onclick="openEdit(${user.id})" class="p-1 text-slate-400 hover:text-primary transition-colors" title="Edit User">
+                                    <span class="material-symbols-outlined text-lg">edit</span>
+                                </button>
+                                <button onclick="deleteUser(${user.id})" class="p-1 text-slate-400 hover:text-danger transition-colors" title="Remove User">
+                                    <span class="material-symbols-outlined text-lg">delete</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = rows;
+        }
+
+        function createUser() {
+            const name = document.getElementById('new-name').value;
+            const role = document.getElementById('new-role').value;
+            const email = document.getElementById('new-email').value;
+
+            if (!name) return alert("Please enter a name");
+
+            fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, role, email })
+            })
+                .then(async res => {
+                    if (!res.ok) {
+                        const err = await res.json().catch(() => ({}));
+                        throw new Error(err.error || "Failed to invite user");
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    document.getElementById('invite-modal').classList.add('hidden');
+                    document.getElementById('new-name').value = '';
+                    document.getElementById('new-email').value = '';
+                    fetchUsers();
+                })
+                .catch(err => alert(err.message));
+        }
+
+        function openEdit(id) {
+            console.log("Opening edit for ID:", id);
+            const user = globalUsers.find(u => u.id === id);
+            if (!user) {
+                alert("User not found: " + id);
+                return;
+            }
+
+            document.getElementById('edit-id').value = user.id;
+            document.getElementById('edit-name').value = user.name;
+            document.getElementById('edit-role').value = user.role;
+            document.getElementById('edit-status').value = user.status;
+            document.getElementById('edit-email').value = user.email || '';
+
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function updateUser() {
+            const id = document.getElementById('edit-id').value;
+            const name = document.getElementById('edit-name').value;
+            const role = document.getElementById('edit-role').value;
+            const status = document.getElementById('edit-status').value;
+            const email = document.getElementById('edit-email').value;
+
+            fetch(`/api/users/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, role, status, email })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('edit-modal').classList.add('hidden');
+                    fetchUsers();
+                })
+                .catch(err => alert("Failed to update user"));
+        }
+
+        function deleteUser(id) {
+            if (!confirm("Are you sure you want to remove this user?")) return;
+
+            fetch(`/api/users/${id}`, { method: 'DELETE' })
+                .then(res => {
+                    if (res.ok) fetchUsers();
+                    else alert("Failed to delete");
+                });
+        }
+    </script>
 </body>
 
 </html>

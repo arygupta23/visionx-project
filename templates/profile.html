@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>VisionX | My Profile</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#19c3e6",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#111e21",
+                        "panel": "#1c2526",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased min-h-screen flex">
+
+    <!-- Sidebar -->
+    <aside
+        class="w-64 flex-shrink-0 bg-background-light dark:bg-background-dark border-r border-slate-200 dark:border-[#3c4f53] flex flex-col justify-between p-4">
+        <div class="flex flex-col gap-8">
+            <div class="flex items-center gap-3 px-2">
+                <div class="size-10 rounded bg-primary flex items-center justify-center text-background-dark">
+                    <span class="material-symbols-outlined font-bold">shield_with_heart</span>
+                </div>
+                <div class="flex flex-col">
+                    <h1 class="text-lg font-bold leading-none tracking-tight">VISIONX</h1>
+                </div>
+            </div>
+            <nav class="flex flex-col gap-1">
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                    href="/ui/home"><span class="material-symbols-outlined text-[20px]">home</span><span
+                        class="text-sm font-medium">Home</span></a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                    href="/ui/dashboard"><span class="material-symbols-outlined text-[20px]">dashboard</span><span
+                        class="text-sm font-medium">Command Center</span></a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                    href="/ui/scan"><span class="material-symbols-outlined text-[20px]">add_moderator</span><span
+                        class="text-sm font-medium">New Scan</span></a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                    href="/ui/reports"><span class="material-symbols-outlined text-[20px]">radar</span><span
+                        class="text-sm font-medium">Threat Intel</span></a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                    href="/ui/history"><span class="material-symbols-outlined text-[20px]">history</span><span
+                        class="text-sm font-medium">Archive</span></a>
+                <div class="h-px bg-slate-200 dark:bg-[#3c4f53] my-2"></div>
+
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                    href="/ui/access"><span class="material-symbols-outlined text-[20px]">group</span><span
+                        class="text-sm font-medium">Access Control</span></a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded bg-primary/10 text-primary border-l-2 border-primary"
+                    href="/ui/profile"><span
+                        class="material-symbols-outlined text-[20px] fill-1">account_circle</span><span
+                        class="text-sm font-medium">My Profile</span></a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                    <a
+                    class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                    href="/ui/settings"><span class="material-symbols-outlined text-[20px]">settings</span><span
+                        class="text-sm font-medium">Settings</span></a>
+            </nav>
+
+            <!-- User Profile in Sidebar -->
+            <div class="mt-auto pt-6 border-t border-slate-200 dark:border-[#3c4f53] px-2 mb-4">
+                <a href="/ui/profile"
+                    class="flex items-center gap-3 p-2 rounded hover:bg-slate-100 dark:hover:bg-panel transition-colors group">
+                    <div class="relative">
+                        <div id="sidebar-avatar-container"
+                            class="size-9 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-xs ring-2 ring-transparent group-hover:ring-primary/50 transition-all overflow-hidden">
+                            <span id="sidebar-initials">--</span>
+                            <img id="sidebar-avatar" src="" class="w-full h-full object-cover hidden">
+                        </div>
+                        <div
+                            class="absolute bottom-0 right-0 size-2.5 bg-success rounded-full border-2 border-background-dark">
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p id="sidebar-name" class="text-xs font-bold truncate">Loading...</p>
+                        <p id="sidebar-role" class="text-[10px] text-slate-500 truncate">...</p>
+                    </div>
+                    <span
+                        class="material-symbols-outlined text-slate-500 group-hover:text-primary text-sm">chevron_right</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-8 overflow-y-auto">
+        <header class="mb-8 border-b border-slate-700 pb-4">
+            <h1 class="text-2xl font-bold">My Profile</h1>
+            <p class="text-slate-500">Manage your personal account details.</p>
+        </header>
+
+        <div class="max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Profile Card -->
+            <div class="md:col-span-1">
+                <div
+                    class="bg-white dark:bg-panel p-6 rounded border border-slate-200 dark:border-[#3c4f53] flex flex-col items-center text-center">
+                    <div class="relative group cursor-pointer"
+                        onclick="document.getElementById('avatar-input').click()">
+                        <div class="size-32 rounded-full bg-primary flex items-center justify-center text-background-dark font-bold text-4xl mb-4 shadow-lg shadow-primary/20 overflow-hidden"
+                            id="avatar-container">
+                            <span id="avatar-initials">AC</span>
+                            <img id="avatar-image" src="" class="w-full h-full object-cover hidden">
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity mb-4">
+                            <span class="material-symbols-outlined text-white text-3xl">photo_camera</span>
+                        </div>
+                    </div>
+                    <input type="file" id="avatar-input" class="hidden" accept="image/*" onchange="uploadAvatar(this)">
+
+                    <h2 class="text-xl font-bold">Admin User</h2>
+                    <p class="text-primary font-medium text-sm mb-2">Administrator</p>
+                    <p class="text-slate-500 text-xs font-mono bg-slate-800/50 px-2 py-1 rounded">admin@visionx.com</p>
+
+                    <button onclick="openEditModal(globalCurrentUser)"
+                        class="mt-6 w-full py-2 bg-slate-700 hover:bg-slate-600 rounded text-sm font-bold transition-colors">
+                        Edit Profile
+                    </button>
+                </div>
+            </div>
+
+            <!-- Details Section -->
+            <div class="md:col-span-2 space-y-6">
+                <section class="bg-white dark:bg-panel p-6 rounded border border-slate-200 dark:border-[#3c4f53]">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">badge</span>
+                        Account Information
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Full
+                                Name</label>
+                            <div class="font-medium">Admin User</div>
+                        </div>
+                        <div>
+                            <label
+                                class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Role</label>
+                            <div class="font-medium text-primary">Administrator</div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Email
+                                Address</label>
+                            <div class="font-medium font-mono">admin@visionx.com</div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Last
+                                Login</label>
+                            <div class="font-medium text-slate-400">Just now</div>
+                        </div>
+                        <div>
+                            <label
+                                class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Status</label>
+                            <div class="flex items-center gap-2">
+                                <span class="size-2 rounded-full bg-success animate-pulse"></span>
+                                <span class="text-success font-bold text-sm">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section
+                    class="bg-white dark:bg-panel p-6 rounded border border-slate-200 dark:border-[#3c4f53] opacity-60">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">history</span>
+                        Recent Session Activity
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3 text-sm">
+                            <span class="material-symbols-outlined text-slate-500 text-lg mt-0.5">login</span>
+                            <div>
+                                <div class="font-bold">Logged in</div>
+                                <div class="text-slate-500 text-xs">2 minutes ago from 192.168.1.1</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 text-sm">
+                            <span class="material-symbols-outlined text-slate-500 text-lg mt-0.5">delete</span>
+                            <div>
+                                <div class="font-bold">Deleted Scan #4021</div>
+                                <div class="text-slate-500 text-xs">15 minutes ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Logout Section -->
+                <section
+                    class="bg-white dark:bg-panel p-6 rounded border border-slate-200 dark:border-[#3c4f53] flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-danger">Sign Out</h3>
+                        <p class="text-slate-500 text-sm">End your current session safely.</p>
+                    </div>
+                    <button onclick="logout()"
+                        class="px-4 py-2 bg-danger/10 hover:bg-danger/20 text-danger font-bold rounded flex items-center gap-2 transition-colors">
+                        <span class="material-symbols-outlined">logout</span>
+                        Log Out
+                    </button>
+                </section>
+            </div>
+        </div>
+
+        <footer class="flex items-center justify-between pt-12 opacity-60">
+            <div class="text-slate-500 dark:text-[#9db4b8] text-[10px] font-medium tracking-wide">
+                VisionX Phishing Defense. Real-time Analysis Engine. © 2026.
+            </div>
+            <div
+                class="flex items-center gap-4 text-slate-500 dark:text-[#9db4b8] text-[10px] font-bold uppercase tracking-[0.2em]">
+                <div class="flex items-center gap-2">
+                    <span class="size-1.5 rounded-full bg-success"></span>
+                    All Systems Active | Encrypted Connection
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Crop Modal -->
+    <div id="crop-modal" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-panel border border-[#3c4f53] rounded-xl p-4 w-full max-w-lg flex flex-col gap-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-white font-bold">Crop Profile Picture</h3>
+                <button onclick="closeCropModal()" class="text-slate-400 hover:text-white">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="relative h-[400px] w-full bg-black rounded overflow-hidden">
+                <img id="crop-image" class="block max-w-full">
+            </div>
+            <div class="flex justify-end gap-3">
+                <button onclick="closeCropModal()"
+                    class="px-4 py-2 rounded text-slate-400 font-bold hover:text-white transition-colors">Cancel</button>
+                <button onclick="confirmCrop()"
+                    class="px-4 py-2 bg-primary text-background-dark font-bold rounded hover:bg-primary/90 transition-colors">
+                    Crop & Upload
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-modal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+        <div
+            class="bg-panel border border-[#3c4f53] rounded-xl p-6 w-full max-w-md shadow-2xl transform transition-all scale-100">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-white">Edit Profile</h3>
+                <button onclick="document.getElementById('edit-modal').classList.add('hidden')"
+                    class="text-slate-400 hover:text-white">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <input type="hidden" id="edit-id">
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Full
+                        Name</label>
+                    <input id="edit-name" type="text"
+                        class="w-full bg-background-dark border border-slate-700 rounded p-2 text-white focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Email
+                        Address</label>
+                    <input id="edit-email" type="email"
+                        class="w-full bg-background-dark border border-slate-700 rounded p-2 text-white focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-600">
+                </div>
+                <div>
+                    <!-- Role is read-only for self-edit usually, but letting them edit for now for simplicity -->
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Role</label>
+                    <select id="edit-role"
+                        class="w-full bg-background-dark border border-slate-700 rounded p-2 text-white focus:ring-1 focus:ring-primary focus:border-primary">
+                        <option value="Analyst">Analyst</option>
+                        <option value="Administrator">Administrator</option>
+                        <option value="Viewer">Viewer</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end gap-3">
+                <button onclick="document.getElementById('edit-modal').classList.add('hidden')"
+                    class="px-4 py-2 rounded text-slate-400 font-bold hover:text-white transition-colors">Cancel</button>
+                <button onclick="updateProfile()"
+                    class="px-4 py-2 bg-primary text-background-dark font-bold rounded hover:bg-primary/90 transition-colors">Save
+                    Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            loadProfile();
+        });
+
+        let currentUserId = null;
+        let globalCurrentUser = null;
+
+        function loadProfile() {
+            fetch('/api/me')
+                .then(res => {
+                    if (res.status === 401) window.location.href = '/ui/login';
+                    return res.json();
+                })
+                .then(user => {
+                    if (user && user.id) {
+                        currentUserId = user.id;
+                        globalCurrentUser = user;
+                        renderProfile(user);
+                        updateSidebarProfile(user);
+                    }
+                })
+                .catch(err => console.error(err));
+        }
+
+        function updateSidebarProfile(user) {
+            const nameEl = document.getElementById('sidebar-name');
+            const roleEl = document.getElementById('sidebar-role');
+            const initialsEl = document.getElementById('sidebar-initials');
+            const avatarEl = document.getElementById('sidebar-avatar');
+
+            if (nameEl) nameEl.textContent = user.name;
+            if (roleEl) roleEl.textContent = user.role;
+
+            if (user.avatar && avatarEl) {
+                avatarEl.src = user.avatar;
+                avatarEl.classList.remove('hidden');
+                if (initialsEl) initialsEl.classList.add('hidden');
+            } else if (initialsEl) {
+                initialsEl.textContent = user.initials;
+                initialsEl.classList.remove('hidden');
+                if (avatarEl) avatarEl.classList.add('hidden');
+            }
+        }
+
+        function renderProfile(user) {
+            globalCurrentUser = user; // Ensure global var is up to date
+
+            // Update Header Card
+            document.querySelector('.md\\:col-span-1 h2').textContent = user.name;
+            document.querySelector('.md\\:col-span-1 p.text-primary').textContent = user.role;
+            document.querySelector('.md\\:col-span-1 p.font-mono').textContent = user.email || 'No email';
+
+            // Update Avatar
+            const initials = document.getElementById('avatar-initials');
+            const img = document.getElementById('avatar-image');
+
+            if (user.avatar) {
+                img.src = user.avatar;
+                img.classList.remove('hidden');
+                initials.classList.add('hidden');
+            } else {
+                initials.textContent = user.initials;
+                initials.classList.remove('hidden');
+                img.classList.add('hidden');
+            }
+
+            // Update Details Section
+            const details = document.querySelectorAll('.md\\:col-span-2 .grid div .font-medium');
+            // 0: Name, 1: Role, 2: Email, 3: Last Login, 4: Status (complex)
+            if (details[0]) details[0].textContent = user.name;
+            if (details[1]) details[1].textContent = user.role;
+            if (details[2]) details[2].textContent = user.email || 'No email';
+        }
+
+        let cropper = null;
+
+        function uploadAvatar(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const img = document.getElementById('crop-image');
+                    img.src = e.target.result;
+
+                    document.getElementById('crop-modal').classList.remove('hidden');
+
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(img, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        dragMode: 'move',
+                        autoCropArea: 1,
+                    });
+                }
+
+                reader.readAsDataURL(file);
+                // Clear input so same file selection triggers change again
+                input.value = '';
+            }
+        }
+
+        function closeCropModal() {
+            document.getElementById('crop-modal').classList.add('hidden');
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+        }
+
+        function confirmCrop() {
+            if (!cropper) return;
+
+            cropper.getCroppedCanvas({
+                width: 300,
+                height: 300
+            }).toBlob((blob) => {
+                const formData = new FormData();
+                // Use a generic filename, backend will rename it anyway
+                formData.append('avatar', blob, 'avatar.png');
+
+                fetch(`/api/users/${currentUserId}/avatar`, {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        closeCropModal();
+                        if (data.avatar) {
+                            loadProfile();
+                        } else {
+                            alert("Upload failed");
+                        }
+                    })
+                    .catch(err => {
+                        closeCropModal();
+                        alert("Error uploading file");
+                    });
+            }, 'image/png');
+        }
+
+        function openEditModal(user) {
+            document.getElementById('edit-id').value = user.id;
+            document.getElementById('edit-name').value = user.name;
+            document.getElementById('edit-email').value = user.email || '';
+            document.getElementById('edit-role').value = user.role;
+
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function updateProfile() {
+            if (!currentUserId) return;
+
+            const name = document.getElementById('edit-name').value;
+            const email = document.getElementById('edit-email').value;
+            const role = document.getElementById('edit-role').value;
+
+            fetch(`/api/users/${currentUserId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, role })
+            })
+                .then(res => res.json())
+                .then(updatedUser => {
+                    renderProfile(updatedUser);
+                    document.getElementById('edit-modal').classList.add('hidden');
+                    alert("Profile updated successfully!");
+                })
+                .catch(err => alert("Failed to update profile"));
+        }
+
+        function logout() {
+            if (!confirm("Are you sure you want to log out?")) return;
+
+            fetch('/api/logout', { method: 'POST' })
+                .then(res => {
+                    window.location.href = '/ui/login';
+                })
+                .catch(err => {
+                    console.error(err);
+                    window.location.href = '/ui/login'; // Redirect anyway
+                });
+        }
+    </script>
+</body>
+
+</html>

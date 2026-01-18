@@ -81,10 +81,10 @@
                     class="px-5 py-2 text-sm font-bold border border-primary/20 hover:border-primary transition-colors rounded">
                     Login
                 </a>
-                <div class="size-8 rounded-full bg-slate-200 dark:bg-slate-800 border border-white/10 overflow-hidden"
+                <div class="size-8 rounded-full bg-slate-200 dark:bg-slate-800 border border-white/10 overflow-hidden flex items-center justify-center"
                     data-alt="User avatar placeholder">
-                    <img alt="avatar" class="w-full h-full object-cover"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQKoPkt2w8AIxuMWQ01Gr9r6yr4EFqSoRwcAA_FMUFtN5tgqO46CHA61OytWFlePxtAhv1ViXCIsYEdNr7SreMqXKx4KtKQy1QiotzC8c_dSowmPIsO5kjHe4kDbXrGcrgAA5tLtTML5kW5h3_67eoSXjmfSGB_RyqE2WMNELxNPaBWfr8OaVnj2V_CHC_jPGXXkqh7_ZSO-pjEUv4-j16bkXq7pZ0vwlqFHaVa8Uc8g4ENSSij8wAUFWF6QOgWVnyn4m3EFvejZ8" />
+                    <img id="landing-avatar" alt="avatar" class="w-full h-full object-cover hidden" src="" />
+                    <span id="landing-initials" class="text-xs font-bold text-slate-500 dark:text-slate-400">--</span>
                 </div>
             </div>
         </div>
@@ -295,6 +295,30 @@
             </div>
         </footer>
     </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('/api/users')
+                .then(res => res.json())
+                .then(data => {
+                    const me = data.find(u => u.name === "Admin User") || data[0];
+                    if (me) {
+                        const avatarEl = document.getElementById('landing-avatar');
+                        const initialsEl = document.getElementById('landing-initials');
+
+                        if (me.avatar) {
+                            avatarEl.src = me.avatar;
+                            avatarEl.classList.remove('hidden');
+                            initialsEl.classList.add('hidden');
+                        } else {
+                            initialsEl.textContent = me.initials;
+                            initialsEl.classList.remove('hidden');
+                            avatarEl.classList.add('hidden');
+                        }
+                    }
+                })
+                .catch(err => console.error(err));
+        });
+    </script>
 </body>
 
 </html>

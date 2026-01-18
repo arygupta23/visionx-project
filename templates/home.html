@@ -40,6 +40,26 @@
         <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[120px] rounded-full"></div>
     </div>
 
+    <!-- Top Right Profile -->
+    <div class="absolute top-6 right-6 z-50">
+        <a href="/ui/profile"
+            class="flex items-center gap-3 bg-white/5 hover:bg-white/10 backdrop-blur border border-white/10 px-4 py-2 rounded-full transition-all group">
+            <div class="text-right hidden sm:block">
+                <p id="home-name" class="text-sm font-bold text-white leading-none">Admin User</p>
+                <p id="home-role" class="text-[10px] text-primary uppercase tracking-wider font-bold">Administrator</p>
+            </div>
+            <div class="relative">
+                <div
+                    class="size-10 rounded-full bg-primary flex items-center justify-center text-background-dark font-bold overflow-hidden ring-2 ring-transparent group-hover:ring-primary/50 transition-all">
+                    <span id="home-initials">AC</span>
+                    <img id="home-avatar" src="" class="w-full h-full object-cover hidden">
+                </div>
+                <div class="absolute bottom-0 right-0 size-2.5 bg-success rounded-full border-2 border-background-dark">
+                </div>
+            </div>
+        </a>
+    </div>
+
     <!-- Spacer for vertical centering of main content -->
     <div class="flex-1 flex flex-col items-center justify-center w-full max-w-4xl">
         <div class="relative z-10 w-full text-center">
@@ -112,6 +132,37 @@
             &copy; 2026. All Systems Active <span class="mx-2 text-primary">|</span> Encrypted Connection
         </p>
     </footer>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('/api/users')
+                .then(res => res.json())
+                .then(data => {
+                    const me = data.find(u => u.name === "Admin User") || data[0];
+                    if (me) updateHomeProfile(me);
+                })
+                .catch(err => console.error(err));
+        });
+
+        function updateHomeProfile(user) {
+            document.getElementById('home-name').textContent = user.name;
+            document.getElementById('home-role').textContent = user.role;
+
+            const initialsEl = document.getElementById('home-initials');
+            const avatarEl = document.getElementById('home-avatar');
+
+            if (user.avatar) {
+                avatarEl.src = user.avatar;
+                avatarEl.classList.remove('hidden');
+                initialsEl.classList.add('hidden');
+            } else {
+                initialsEl.textContent = user.initials;
+                initialsEl.classList.remove('hidden');
+                avatarEl.classList.add('hidden');
+            }
+        }
+    </script>
 </body>
 
 </html>

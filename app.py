@@ -13,9 +13,10 @@ import random
 from datetime import datetime
 from urllib.parse import urlparse
 
-from flask import Flask, request, jsonify, send_from_directory, abort, send_file, redirect
+from flask import Flask, request, jsonify, send_from_directory, abort, send_file, redirect, session, url_for, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from io import BytesIO
@@ -30,6 +31,8 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "change-me")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///visionx.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["UPLOAD_FOLDER"] = os.path.join("static", "avatars")
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
@@ -58,8 +61,75 @@ class ScanHistory(db.Model):
             "created_at": self.created_at.isoformat() + "Z"
         }
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    role = db.Column(db.String(50), nullable=False)
+    status = db.Column(db.String(20), default="Active")
+    initials = db.Column(db.String(5))
+    color = db.Column(db.String(20))
+    email = db.Column(db.String(100))
+    password_hash = db.Column(db.String(256)) # Stores the hashed password
+    avatar = db.Column(db.String(200)) # Stores the filename
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "role": self.role,
+            "status": self.status,
+            "initials": self.initials,
+            "color": self.color,
+            "color": self.color,
+            "email": self.email or "",
+            "avatar": self.avatar or ""
+        }
+
 with app.app_context():
     db.create_all()
+    # Auto-migration for dev convenience: check if email column exists
+    from sqlalchemy import text
+    try:
+        with db.engine.connect() as conn:
+            conn.execute(text("SELECT email FROM user LIMIT 1"))
+    except Exception:
+        print("Migrating: Adding email column to user table...")
+        try:
+            with db.engine.connect() as conn:
+                conn.execute(text("ALTER TABLE user ADD COLUMN email VARCHAR(100)"))
+                conn.commit()
+        except Exception as e:
+            print(f"Migration failed: {e}")
+
+    # Auto-migration: Check for avatar column
+    try:
+        with db.engine.connect() as conn:
+            conn.execute(text("SELECT avatar FROM user LIMIT 1"))
+    except Exception:
+        print("Migrating: Adding avatar column to user table...")
+        try:
+            with db.engine.connect() as conn:
+                conn.execute(text("ALTER TABLE user ADD COLUMN avatar VARCHAR(200)"))
+                conn.commit()
+        except Exception as e:
+            print(f"Migration (Avatar) failed: {e}")
+
+    # Auto-migration: Check for password_hash column
+    try:
+        with db.engine.connect() as conn:
+            conn.execute(text("SELECT password_hash FROM user LIMIT 1"))
+    except Exception:
+        print("Migrating: Adding password_hash column to user table...")
+        try:
+            with db.engine.connect() as conn:
+                conn.execute(text("ALTER TABLE user ADD COLUMN password_hash VARCHAR(256)"))
+                
+                # Set default password for existing users (admin123)
+                default_pw = generate_password_hash("admin123")
+                conn.execute(text(f"UPDATE user SET password_hash = :pw"), {"pw": default_pw})
+                conn.commit()
+        except Exception as e:
+            print(f"Migration (Password) failed: {e}")
 
 # -----------------------
 # Helpers
@@ -224,6 +294,106 @@ def score_file(filename, data):
     return clamp(score), reasons, sha256
 
 # -----------------------
+# Auth & Middleware
+# -----------------------
+@app.before_request
+def auth_middleware():
+    # Allow static resources
+    if request.path.startswith('/static'):
+        return None
+        
+    # Whitelist login routes
+    if request.path in ['/ui/login', '/api/login']:
+        return None
+        
+    # Load user if session exists
+    user_id = session.get('user_id')
+    if user_id:
+        g.user = User.query.get(user_id)
+    else:
+        g.user = None
+        
+    # Protect /ui routes
+    if request.path.startswith('/ui/'):
+        if not g.user:
+            return redirect('/ui/login')
+            
+    # Protect /api routes (except auth ones)
+    if request.path.startswith('/api/'):
+        if not g.user:
+            return jsonify({"error": "Unauthorized"}), 401
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    username = data.get("username") # Can be email or name
+    password = data.get("password")
+    
+    if not username or not password:
+        return jsonify({"error": "Missing credentials"}), 400
+        
+    # Try finding by name or email
+    user = User.query.filter(
+        (User.name == username) | (User.email == username)
+    ).first()
+    
+    if user and user.password_hash and check_password_hash(user.password_hash, password):
+        session['user_id'] = user.id
+        return jsonify({"message": "Logged in", "user": user.to_dict()})
+        
+    return jsonify({"error": "Invalid username or password"}), 401
+
+@app.route("/api/register", methods=["POST"])
+def register():
+    data = request.get_json()
+    name = data.get("name")
+    email = data.get("email")
+    password = data.get("password")
+    
+    if not name or not email or not password:
+        return jsonify({"error": "All fields are required"}), 400
+        
+    # Check if user exists
+    if User.query.filter((User.email == email) | (User.name == name)).first():
+        return jsonify({"error": "User already exists"}), 409
+        
+    # Create new user
+    parts = [n for n in name.strip().split(" ") if n]
+    initials = "".join([n[0] for n in parts[:2]]).upper() if parts else "??"
+    colors = ["bg-primary", "bg-purple-500", "bg-success", "bg-warning", "bg-pink-500", "bg-indigo-500"]
+    
+    new_user = User(
+        name=name,
+        email=email,
+        role="Analyst", # Default role
+        status="Active",
+        initials=initials,
+        color=random.choice(colors),
+        password_hash=generate_password_hash(password)
+    )
+    
+    db.session.add(new_user)
+    db.session.commit()
+    
+    # Auto-login
+    session['user_id'] = new_user.id
+    
+    return jsonify({"message": "Registered successfully", "user": new_user.to_dict()})
+
+@app.route("/api/me", methods=["GET"])
+def get_current_user():
+    if not g.user:
+        return jsonify({"error": "Unauthorized"}), 401
+    return jsonify(g.user.to_dict())
+
+@app.route("/api/logout", methods=["POST"])
+def logout():
+    session.clear()
+    return jsonify({"message": "Logged out"})
+
+
+
+# -----------------------
 # UI lookup and routes
 # -----------------------
 def find_ui_file(filename: str):
@@ -262,6 +432,7 @@ def ui_page(page):
     Serve simple UI HTML files shipped in the repository.
     """
     mapping = {
+        "login": "login.html",
         "landing": "landing.html",
         "reports": "report.html",
         "dashboard": "dashboard.html",
@@ -270,7 +441,8 @@ def ui_page(page):
         "settings": "settings.html",
         "access": "access.html",
         "home": "home.html",
-        "about": "about.html"
+        "about": "about.html",
+        "profile": "profile.html"
     }
     fname = mapping.get(page)
     if not fname:
@@ -374,6 +546,16 @@ def history():
     items = ScanHistory.query.order_by(ScanHistory.created_at.desc()).all()
     return jsonify([i.to_dict() for i in items])
 
+@app.route("/api/history/<int:id>", methods=["DELETE"])
+def delete_history_item(id):
+    record = ScanHistory.query.get(id)
+    if not record:
+        return jsonify({"error": "Record not found"}), 404
+    
+    db.session.delete(record)
+    db.session.commit()
+    return jsonify({"message": "Record deleted successfully"})
+
 @app.route("/api/history/export/csv", methods=["GET"])
 def export_history_csv():
     """Generates a CSV of all scan history and returns it as a downloadable file."""
@@ -413,6 +595,100 @@ def export_history_csv():
         as_attachment=True,
         download_name=f"visionx_scan_history_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
     )
+
+@app.route("/api/users", methods=["GET"])
+def get_users():
+    users = User.query.all()
+    # If no users exist, seed default ones
+    if not users:
+        default_pw = generate_password_hash("admin123")
+        seed_users = [
+            User(name="Admin User", role="Administrator", status="Active", initials="AC", color="bg-primary", password_hash=default_pw),
+            User(name="John Doe", role="Analyst", status="Active", initials="JD", color="bg-purple-500", password_hash=default_pw)
+        ]
+        db.session.add_all(seed_users)
+        db.session.commit()
+        users = User.query.all()
+        
+    return jsonify([u.to_dict() for u in users])
+
+@app.route("/api/users", methods=["POST"])
+def create_user():
+    data = request.get_json()
+    name = data.get("name")
+    role = data.get("role")
+    email = data.get("email", "")
+    
+    if not name or not role:
+        return jsonify({"error": "Name and Role required"}), 400
+        
+    parts = [n for n in name.strip().split(" ") if n]
+    initials = "".join([n[0] for n in parts[:2]]).upper() if parts else "??"
+    colors = ["bg-primary", "bg-purple-500", "bg-success", "bg-warning", "bg-pink-500", "bg-indigo-500"]
+    color = random.choice(colors)
+    
+    user = User(name=name, role=role, status="Active", initials=initials, color=color, email=email)
+    db.session.add(user)
+    db.session.commit()
+    
+    return jsonify(user.to_dict()), 201
+
+@app.route("/api/users/<int:id>", methods=["PUT"])
+def update_user(id):
+    user = User.query.get(id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    data = request.get_json()
+    if data:
+        user.name = data.get("name", user.name)
+        user.role = data.get("role", user.role)
+        user.status = data.get("status", user.status)
+        user.email = data.get("email", user.email)
+        
+        # Regenerate initials if name changes
+        if "name" in data:
+            user.initials = "".join([n[0] for n in user.name.split(" ")[:2]]).upper()
+
+    db.session.commit()
+    return jsonify(user.to_dict())
+
+@app.route("/api/users/<int:id>/avatar", methods=["POST"])
+def upload_avatar(id):
+    user = User.query.get(id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    if 'avatar' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    
+    file = request.files['avatar']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+        
+    if file:
+        from werkzeug.utils import secure_filename
+        filename = secure_filename(f"user_{id}_{int(datetime.now().timestamp())}_{file.filename}")
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        
+        # Save relative path for frontend usage
+        user.avatar = f"/static/avatars/{filename}"
+        db.session.commit()
+        
+        return jsonify({"avatar": user.avatar})
+
+    return jsonify({"error": "Upload failed"}), 500
+
+@app.route("/api/users/<int:id>", methods=["DELETE"])
+def delete_user(id):
+    user = User.query.get(id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+        
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({"message": "User deleted"})
 
 # -----------------------
 # Report generation

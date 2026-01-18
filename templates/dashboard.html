@@ -103,25 +103,40 @@
                         href="/ui/access"><span class="material-symbols-outlined text-[20px]">group</span><span
                             class="text-sm font-medium">Access Control</span></a>
                     <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
-                        href="/ui/settings"><span class="material-symbols-outlined text-[20px]">settings</span><span
+                        href="/ui/profile"><span
+                            class="material-symbols-outlined text-[20px]">account_circle</span><span
+                            class="text-sm font-medium">My Profile</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded bg-primary/10 text-primary border-l-2 border-primary"
+                        href="/ui/settings"><span
+                            class="material-symbols-outlined text-[20px] fill-1">settings</span><span
                             class="text-sm font-medium">Settings</span></a>
                 </nav>
+                </nav>
             </div>
-            <div class="flex flex-col gap-4">
-                <div class="p-3 bg-panel rounded border border-[#3c4f53]">
-                    <p class="text-[10px] text-slate-400 uppercase font-bold mb-2">System Status</p>
-                    <div class="flex items-center gap-2">
-                        <div class="size-2 rounded-full bg-success animate-pulse"></div>
-                        <span class="text-xs font-mono">Node: US-EAST-1 (Active)</span>
+            <!-- User Profile in Sidebar -->
+            <div class="mt-auto pt-6 border-t border-slate-200 dark:border-[#3c4f53] px-2 mb-4">
+                <a href="/ui/profile"
+                    class="flex items-center gap-3 p-2 rounded hover:bg-slate-100 dark:hover:bg-panel transition-colors group">
+                    <div class="relative">
+                        <div id="sidebar-avatar-container"
+                            class="size-9 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-xs ring-2 ring-transparent group-hover:ring-primary/50 transition-all overflow-hidden">
+                            <span id="sidebar-initials">--</span>
+                            <img id="sidebar-avatar" src="" class="w-full h-full object-cover hidden">
+                        </div>
+                        <div
+                            class="absolute bottom-0 right-0 size-2.5 bg-success rounded-full border-2 border-background-dark">
+                        </div>
                     </div>
-                </div>
-                <a href="/ui/scan"
-                    class="w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-3 rounded flex items-center justify-center gap-2 transition-all">
-                    <span class="material-symbols-outlined text-sm">add_moderator</span>
-                    <span class="text-xs uppercase tracking-wider">Execute New Scan</span>
+                    <div class="flex-1 min-w-0">
+                        <p id="sidebar-name" class="text-xs font-bold truncate">Loading...</p>
+                        <p id="sidebar-role" class="text-[10px] text-slate-500 truncate">...</p>
+                    </div>
+                    <span
+                        class="material-symbols-outlined text-slate-500 group-hover:text-primary text-sm">chevron_right</span>
                 </a>
             </div>
         </aside>
+
         <!-- Main Content -->
         <main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark relative">
             <!-- Header Bar -->
@@ -135,11 +150,6 @@
                         <span class="material-symbols-outlined text-sm text-primary">search</span>
                         <input class="bg-transparent border-none text-xs focus:ring-0 w-48"
                             placeholder="Search signals..." type="text" />
-                    </div>
-                    <div class="size-8 rounded-full border-2 border-primary p-0.5">
-                        <div class="w-full h-full rounded-full bg-cover bg-center" data-alt="User profile avatar"
-                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA5C2hXEq0mSq196AOmrv6n2wvvvPkuDsl0JpuqJli8aowz0EnIn_aZmP0hu0aiEC-ekYEjCCIy2IVY-gVKMU2IrRbMrJWKDxAXPBoM1iuaQoIby6bRCPnCzjRtnO3CLvpDJsrbS1rPBdM1iuaQoIby6bRCPnCzjRtnO3CLvpDJsrbS1rPBdMGAayWiu_Fo7k5swUVSYLeTpu-kx-P1RBrxp7RN2hbfhJYlFbStsfl_AmA--32d5pDKSbdd35DUjvvlF3QFm7WaX7hZdJpuqJli8aowz0EnIn_aZmP0hu0aiEC-ekYEjCCIy2IVY-gVKMU2IrRbMrJWKDxAXPBoM1iuaQoIby6bRCPnCzjRtnO3CLvpDJsrbS1rPBdMGAayWiu_Fo7k5swUVSYLeTpu-kx-P1RBrxp7RN2hbfhJYlFbStsfl_AmA--32d5pDKSbdd35DUjvvlF3QFm7WaX7hZdASCdMXJq109o6iSnNxFkvp2OpePIAOOczj5E')">
-                        </div>
                     </div>
                 </div>
             </header>
@@ -573,9 +583,12 @@
                             <td class="px-6 py-4 text-xs font-mono text-slate-500">
                                 ${new Date(item.created_at).toLocaleString()}
                             </td>
-                            <td class="px-6 py-4">
-                                <button onclick="openExplainability(${item.id})" class="text-slate-400 hover:text-primary transition-colors">
+                            <td class="px-6 py-4 flex items-center gap-2">
+                                <button onclick="openExplainability(${item.id})" class="text-slate-400 hover:text-primary transition-colors" title="View Details">
                                     <span class="material-symbols-outlined text-lg">visibility</span>
+                                </button>
+                                <button onclick="deleteScan(${item.id})" class="text-slate-400 hover:text-danger transition-colors" title="Delete Record">
+                                    <span class="material-symbols-outlined text-lg">delete</span>
                                 </button>
                             </td>
                         </tr>
@@ -586,6 +599,37 @@
 
             updatePaginationInfo(start + 1, Math.min(end, totalItems), totalItems);
             updatePaginationControls(Math.ceil(totalItems / rowsPerPage));
+        }
+
+        function deleteScan(id) {
+            if (!confirm("Are you sure you want to delete this scan record?")) return;
+
+            fetch(`/api/history/${id}`, {
+                method: 'DELETE'
+            })
+                .then(res => {
+                    if (res.ok) {
+                        // Remove from global data
+                        globalScanData = globalScanData.filter(d => d.id !== id);
+
+                        // Update stats immediately
+                        const total = globalScanData.length;
+                        const high = globalScanData.filter(d => d.risk_level === 'Dangerous').length;
+                        const safe = globalScanData.filter(d => d.risk_level === 'Safe').length;
+                        const avgRisk = total > 0 ? (globalScanData.reduce((acc, curr) => acc + (curr.risk_score || 0), 0) / total) : 0;
+
+                        document.getElementById('stat-total').textContent = total.toLocaleString();
+                        document.getElementById('stat-high').textContent = high.toLocaleString();
+                        document.getElementById('stat-safe').textContent = safe.toLocaleString();
+                        document.getElementById('stat-avg').textContent = Math.round(avgRisk) + '%';
+
+                        // Re-render table
+                        renderTable(currentPage);
+                    } else {
+                        alert('Failed to delete record.');
+                    }
+                })
+                .catch(err => console.error(err));
         }
 
         function updatePaginationInfo(start, end, total) {
@@ -749,6 +793,41 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('/api/users')
+                .then(res => res.json())
+                .then(data => {
+                    const me = data.find(u => u.name === "Admin User") || data[0];
+                    if (me) updateSidebarProfile(me);
+                })
+                .catch(err => console.error(err));
+        });
+
+        function updateSidebarProfile(user) {
+            const nameEl = document.getElementById('sidebar-name');
+            const roleEl = document.getElementById('sidebar-role');
+            const initialsEl = document.getElementById('sidebar-initials');
+            const avatarEl = document.getElementById('sidebar-avatar');
+
+            if (nameEl) nameEl.textContent = user.name;
+            if (roleEl) roleEl.textContent = user.role;
+
+            if (user.avatar) {
+                if (avatarEl) {
+                    avatarEl.src = user.avatar;
+                    avatarEl.classList.remove('hidden');
+                    if (initialsEl) initialsEl.classList.add('hidden');
+                }
+            } else {
+                if (initialsEl) {
+                    initialsEl.textContent = user.initials;
+                    initialsEl.classList.remove('hidden');
+                    if (avatarEl) avatarEl.classList.add('hidden');
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>

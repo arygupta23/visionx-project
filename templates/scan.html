@@ -81,16 +81,35 @@
                         href="/ui/access"><span class="material-symbols-outlined text-[20px]">group</span><span
                             class="text-sm font-medium">Access Control</span></a>
                     <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/profile"><span
+                            class="material-symbols-outlined text-[20px]">account_circle</span><span
+                            class="text-sm font-medium">My Profile</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
                         href="/ui/settings"><span class="material-symbols-outlined text-[20px]">settings</span><span
                             class="text-sm font-medium">Settings</span></a>
                 </nav>
             </div>
-            <div class="p-3 bg-panel rounded border border-[#3c4f53]">
-                <p class="text-[10px] text-slate-400 uppercase font-bold mb-2">System Status</p>
-                <div class="flex items-center gap-2">
-                    <div class="size-2 rounded-full bg-success animate-pulse"></div>
-                    <span class="text-xs font-mono">Node: US-EAST-1 (Active)</span>
-                </div>
+            <!-- User Profile in Sidebar -->
+            <div class="mt-auto pt-6 border-t border-slate-200 dark:border-[#3c4f53] px-2 mb-4">
+                <a href="/ui/profile"
+                    class="flex items-center gap-3 p-2 rounded hover:bg-slate-100 dark:hover:bg-panel transition-colors group">
+                    <div class="relative">
+                        <div id="sidebar-avatar-container"
+                            class="size-9 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-xs ring-2 ring-transparent group-hover:ring-primary/50 transition-all overflow-hidden">
+                            <span id="sidebar-initials">--</span>
+                            <img id="sidebar-avatar" src="" class="w-full h-full object-cover hidden">
+                        </div>
+                        <div
+                            class="absolute bottom-0 right-0 size-2.5 bg-success rounded-full border-2 border-background-dark">
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p id="sidebar-name" class="text-xs font-bold truncate">Loading...</p>
+                        <p id="sidebar-role" class="text-[10px] text-slate-500 truncate">...</p>
+                    </div>
+                    <span
+                        class="material-symbols-outlined text-slate-500 group-hover:text-primary text-sm">chevron_right</span>
+                </a>
             </div>
         </aside>
 
@@ -431,6 +450,41 @@
                 }
             }
         });
+
+        // Global User Profile Loader for Sidebar
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('/api/users')
+                .then(res => res.json())
+                .then(data => {
+                    const me = data.find(u => u.name === "Admin User") || data[0];
+                    if (me) updateSidebarProfile(me);
+                })
+                .catch(err => console.error(err));
+        });
+
+        function updateSidebarProfile(user) {
+            const nameEl = document.getElementById('sidebar-name');
+            const roleEl = document.getElementById('sidebar-role');
+            const initialsEl = document.getElementById('sidebar-initials');
+            const avatarEl = document.getElementById('sidebar-avatar');
+
+            if (nameEl) nameEl.textContent = user.name;
+            if (roleEl) roleEl.textContent = user.role;
+
+            if (user.avatar) {
+                if (avatarEl) {
+                    avatarEl.src = user.avatar;
+                    avatarEl.classList.remove('hidden');
+                    if (initialsEl) initialsEl.classList.add('hidden');
+                }
+            } else {
+                if (initialsEl) {
+                    initialsEl.textContent = user.initials;
+                    initialsEl.classList.remove('hidden');
+                    if (avatarEl) avatarEl.classList.add('hidden');
+                }
+            }
+        }
     </script>
 </body>
 

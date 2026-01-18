@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Login | VisionX Security</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#19c3e6",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#111e21",
+                        "surface-dark": "#1a2629",
+                        "danger": "#fa5f38",
+                        "success": "#0bda54",
+                        "warning": "#facc15",
+                        "border-dark": "#293638",
+                        "panel": "#1c2526"
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: "Space Grotesk", sans-serif;
+            background-image: radial-gradient(circle at 50% 0%, #1a2629 0%, #111e21 100%);
+        }
+
+        .animated-grid {
+            mask-image: linear-gradient(to bottom, transparent, 10%, black, 90%, transparent);
+            background-size: 40px 40px;
+            background-image:
+                linear-gradient(to right, #293638 1px, transparent 1px),
+                linear-gradient(to bottom, #293638 1px, transparent 1px);
+        }
+    </style>
+</head>
+
+<body class="bg-background-dark text-slate-100 min-h-screen flex items-center justify-center relative overflow-y-auto">
+
+    <!-- Background Grid -->
+    <div class="absolute inset-0 animated-grid opacity-20 pointer-events-none"></div>
+
+    <div class="w-full max-w-md p-8 relative z-10">
+        <!-- Logo -->
+        <div class="flex flex-col items-center mb-10">
+            <div
+                class="size-14 rounded bg-primary flex items-center justify-center text-background-dark mb-4 shadow-[0_0_20px_rgba(25,195,230,0.3)]">
+                <span class="material-symbols-outlined text-3xl font-bold">shield_with_heart</span>
+            </div>
+            <h1 class="text-3xl font-bold tracking-tight text-white">VISIONX</h1>
+            <p class="text-primary text-xs font-bold tracking-[0.3em] uppercase mt-2">Security Command</p>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-card"
+            class="bg-panel border border-[#3c4f53] rounded-xl p-8 shadow-2xl backdrop-blur-sm transition-all duration-300">
+            <h2 class="text-xl font-bold mb-6 text-center text-white">Identify Yourself</h2>
+
+            <form id="login-form" class="space-y-6" onsubmit="handleLogin(event)">
+                <div id="login-error-msg"
+                    class="hidden p-3 rounded bg-danger/10 border border-danger/20 text-danger text-xs font-bold text-center">
+                    Invalid credentials
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Username or
+                        Email</label>
+                    <div class="relative">
+                        <div
+                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                            <span class="material-symbols-outlined text-lg">person</span>
+                        </div>
+                        <input id="username" type="text" required
+                            class="w-full bg-background-dark border border-slate-700 rounded p-2.5 pl-10 text-white focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-600 transition-all"
+                            placeholder="Enter your ID">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Password</label>
+                    <div class="relative">
+                        <div
+                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                            <span class="material-symbols-outlined text-lg">lock</span>
+                        </div>
+                        <input id="password" type="password" required
+                            class="w-full bg-background-dark border border-slate-700 rounded p-2.5 pl-10 text-white focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-600 transition-all text-sm tracking-widest"
+                            placeholder="••••••••">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <button id="login-btn" type="submit"
+                        class="w-full py-3 bg-primary text-background-dark font-black tracking-widest uppercase rounded hover:bg-primary/90 hover:shadow-[0_0_15px_rgba(25,195,230,0.4)] transition-all flex items-center justify-center gap-2">
+                        <span>Access System</span>
+                        <span class="material-symbols-outlined text-lg">login</span>
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-xs text-slate-500">New personnel? <button onclick="toggleForm('register')"
+                        class="text-primary hover:underline font-bold">Register Account</button></p>
+            </div>
+        </div>
+
+        <!-- Register Form (Hidden by default) -->
+        <div id="register-card"
+            class="bg-panel border border-[#3c4f53] rounded-xl p-8 shadow-2xl backdrop-blur-sm hidden transition-all duration-300">
+            <h2 class="text-xl font-bold mb-6 text-center text-white">New Clearance Request</h2>
+
+            <form id="register-form" class="space-y-4" onsubmit="handleRegister(event)">
+                <div id="register-error-msg"
+                    class="hidden p-3 rounded bg-danger/10 border border-danger/20 text-danger text-xs font-bold text-center">
+                    Registration failed
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Full
+                        Name</label>
+                    <div class="relative">
+                        <div
+                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                            <span class="material-symbols-outlined text-lg">badge</span>
+                        </div>
+                        <input id="reg-name" type="text" required
+                            class="w-full bg-background-dark border border-slate-700 rounded p-2.5 pl-10 text-white focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-600 transition-all"
+                            placeholder="e.g. Sarah Connor">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Email
+                        Address</label>
+                    <div class="relative">
+                        <div
+                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                            <span class="material-symbols-outlined text-lg">mail</span>
+                        </div>
+                        <input id="reg-email" type="email" required
+                            class="w-full bg-background-dark border border-slate-700 rounded p-2.5 pl-10 text-white focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-600 transition-all"
+                            placeholder="name@visionx.security">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Password</label>
+                    <div class="relative">
+                        <div
+                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                            <span class="material-symbols-outlined text-lg">key</span>
+                        </div>
+                        <input id="reg-password" type="password" required
+                            class="w-full bg-background-dark border border-slate-700 rounded p-2.5 pl-10 text-white focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-slate-600 transition-all text-sm tracking-widest"
+                            placeholder="••••••••">
+                    </div>
+                </div>
+
+                <button id="register-btn" type="submit"
+                    class="w-full py-3 bg-primary text-background-dark font-black tracking-widest uppercase rounded hover:bg-primary/90 hover:shadow-[0_0_15px_rgba(25,195,230,0.4)] transition-all flex items-center justify-center gap-2 mt-4">
+                    <span>Create Account</span>
+                    <span class="material-symbols-outlined text-lg">person_add</span>
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-xs text-slate-500">Already cleared? <button onclick="toggleForm('login')"
+                        class="text-primary hover:underline font-bold">Access System</button></p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if we have a hash param to show error
+            if (window.location.hash === '#error') {
+                showError('login-error-msg', "Session expired or invalid access.");
+            }
+        });
+
+        function toggleForm(formType) {
+            const loginCard = document.getElementById('login-card');
+            const regCard = document.getElementById('register-card');
+
+            if (formType === 'register') {
+                loginCard.classList.add('hidden');
+                regCard.classList.remove('hidden');
+            } else {
+                regCard.classList.add('hidden');
+                loginCard.classList.remove('hidden');
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('login-btn');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorEl = document.getElementById('login-error-msg');
+
+            // Loading state
+            const originalContent = btn.innerHTML;
+            setLoading(btn, true, "Authenticating...");
+            errorEl.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (res.ok) {
+                    window.location.href = '/ui/home';
+                } else {
+                    const data = await res.json().catch(() => ({}));
+                    showError('login-error-msg', data.error || "Authentication failed");
+                    setLoading(btn, false, originalContent);
+                }
+            } catch (err) {
+                console.error(err);
+                showError('login-error-msg', "System unreachable");
+                setLoading(btn, false, originalContent);
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const btn = document.getElementById('register-btn');
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const errorEl = document.getElementById('register-error-msg');
+
+            // Loading state
+            const originalContent = btn.innerHTML;
+            setLoading(btn, true, "Creating ID...");
+            errorEl.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                if (res.ok) {
+                    window.location.href = '/ui/home'; // Auto-login on success
+                } else {
+                    const data = await res.json().catch(() => ({}));
+                    showError('register-error-msg', data.error || "Registration failed");
+                    setLoading(btn, false, originalContent);
+                }
+            } catch (err) {
+                console.error(err);
+                showError('register-error-msg', "System unreachable");
+                setLoading(btn, false, originalContent);
+            }
+        }
+
+        function showError(elId, msg) {
+            const el = document.getElementById(elId);
+            el.textContent = msg;
+            el.classList.remove('hidden');
+        }
+
+        function setLoading(btn, isLoading, content) {
+            if (isLoading) {
+                btn.innerHTML = `<span class="size-4 border-2 border-background-dark border-t-transparent rounded-full animate-spin"></span> ${content}`;
+                btn.disabled = true;
+                btn.classList.add('opacity-80', 'cursor-not-allowed');
+            } else {
+                btn.innerHTML = content;
+                btn.disabled = false;
+                btn.classList.remove('opacity-80', 'cursor-not-allowed');
+            }
+        }
+    </script>
+</body>
+
+</html>

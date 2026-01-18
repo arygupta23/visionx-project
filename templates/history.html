@@ -114,9 +114,36 @@
                         href="/ui/access"><span class="material-symbols-outlined text-[20px]">group</span><span
                             class="text-sm font-medium">Access Control</span></a>
                     <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
+                        href="/ui/profile"><span
+                            class="material-symbols-outlined text-[20px]">account_circle</span><span
+                            class="text-sm font-medium">My Profile</span></a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-500 hover:text-primary transition-colors"
                         href="/ui/settings"><span class="material-symbols-outlined text-[20px]">settings</span><span
                             class="text-sm font-medium">Settings</span></a>
                 </nav>
+
+                <!-- User Profile in Sidebar -->
+                <div class="mt-auto pt-6 border-t border-slate-200 dark:border-[#3c4f53] px-2 mb-4">
+                    <a href="/ui/profile"
+                        class="flex items-center gap-3 p-2 rounded hover:bg-slate-100 dark:hover:bg-panel transition-colors group">
+                        <div class="relative">
+                            <div id="sidebar-avatar-container"
+                                class="size-9 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-xs ring-2 ring-transparent group-hover:ring-primary/50 transition-all overflow-hidden">
+                                <span id="sidebar-initials">--</span>
+                                <img id="sidebar-avatar" src="" class="w-full h-full object-cover hidden">
+                            </div>
+                            <div
+                                class="absolute bottom-0 right-0 size-2.5 bg-success rounded-full border-2 border-background-dark">
+                            </div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p id="sidebar-name" class="text-xs font-bold truncate">Loading...</p>
+                            <p id="sidebar-role" class="text-[10px] text-slate-500 truncate">...</p>
+                        </div>
+                        <span
+                            class="material-symbols-outlined text-slate-500 group-hover:text-primary text-sm">chevron_right</span>
+                    </a>
+                </div>
             </div>
             <div class="flex flex-col gap-4">
                 <div class="p-3 bg-panel rounded border border-[#3c4f53]">
@@ -150,11 +177,6 @@
                         <input id="history-search"
                             class="bg-white dark:bg-[#0b1416] border border-slate-200 dark:border-[#2a3b3d] text-xs rounded focus:ring-1 focus:ring-primary w-64 pl-9 py-2 transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
                             placeholder="Search audit logs..." type="text" />
-                    </div>
-                    <div class="size-8 rounded-full border-2 border-primary p-0.5">
-                        <div class="w-full h-full rounded-full bg-cover bg-center" data-alt="User profile avatar"
-                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuChNM-d-KMmv0r1eLMaD4xZnVjYgbAoja-heHhNmhkKHHxU7kCWf8a62iuURxxfDiCox-l2SauRm_6uc2JzzU3PTdTdwFSy4aFSBeemR0POpKiesNOOxAftM9EMAtdL60G49kofjObkg-tMkPPZcH6QdWEtXgDlUtluOyzHpPbvRbmbK2NauTUGowR6WZwPAykwF4Hh3YhRFyku9ziROzOEMaXUS0iE9CrJySBTEZjFEUlWDw6oxPrOH2bgsf8Fv_V3Rwi-UcGLG8')">
-                        </div>
                     </div>
                 </div>
             </header>
@@ -294,7 +316,42 @@
         let globalHistoryData = [];
 
         document.addEventListener("DOMContentLoaded", function () {
+            fetchScanHistory();
+            fetch('/api/users')
+                .then(res => res.json())
+                .then(data => {
+                    // Update Sidebar Profile too
+                    const me = data.find(u => u.name === "Admin User") || data[0];
+                    if (me) updateSidebarProfile(me);
+                })
+                .catch(err => console.error(err));
+        });
 
+        function updateSidebarProfile(user) {
+            const nameEl = document.getElementById('sidebar-name');
+            const roleEl = document.getElementById('sidebar-role');
+            const initialsEl = document.getElementById('sidebar-initials');
+            const avatarEl = document.getElementById('sidebar-avatar');
+
+            if (nameEl) nameEl.textContent = user.name;
+            if (roleEl) roleEl.textContent = user.role;
+
+            if (user.avatar) {
+                if (avatarEl) {
+                    avatarEl.src = user.avatar;
+                    avatarEl.classList.remove('hidden');
+                    if (initialsEl) initialsEl.classList.add('hidden');
+                }
+            } else {
+                if (initialsEl) {
+                    initialsEl.textContent = user.initials;
+                    initialsEl.classList.remove('hidden');
+                    if (avatarEl) avatarEl.classList.add('hidden');
+                }
+            }
+        }
+
+        async function fetchScanHistory() {
             // Search Functionality
             const searchInput = document.getElementById("history-search");
             searchInput.addEventListener("input", function (e) {
@@ -323,7 +380,7 @@
                     console.error(err);
                     document.getElementById("scan-history-body").innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Failed to load history.</td></tr>`;
                 });
-        });
+        }
 
         function filterScans(type) {
             // Update Tab UI
@@ -400,9 +457,13 @@
                     </td>
                         <td class="px-6 py-4 text-right">
                         <div class="flex justify-end gap-2">
-                            <button onclick="downloadHistoryItem(${item.id})" class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-surface-dark hover:bg-primary hover:text-background-dark text-slate-700 dark:text-white text-xs font-bold rounded transition-all neo-border">
+                             <button onclick="downloadHistoryItem(${item.id})" class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-surface-dark hover:bg-primary hover:text-background-dark text-slate-700 dark:text-white text-xs font-bold rounded transition-all neo-border">
                                 <span class="material-symbols-outlined text-sm">download</span>
                                 Report
+                            </button>
+                            <button onclick="deleteScan(${item.id})" class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-surface-dark hover:bg-danger hover:text-white text-slate-700 dark:text-white text-xs font-bold rounded transition-all neo-border group">
+                                <span class="material-symbols-outlined text-sm group-hover:animate-pulse">delete</span>
+                                Delete
                             </button>
                         </div>
                     </td>
@@ -410,6 +471,25 @@
             `;
                 tbody.innerHTML += row;
             });
+        }
+
+        function deleteScan(id) {
+            if (!confirm("Are you sure you want to delete this scan record? This cannot be undone.")) return;
+
+            fetch(`/api/history/${id}`, {
+                method: 'DELETE'
+            })
+                .then(res => {
+                    if (res.ok) {
+                        // Remove from global data
+                        globalHistoryData = globalHistoryData.filter(item => item.id !== id);
+                        // Re-render
+                        renderTable(globalHistoryData);
+                    } else {
+                        alert('Failed to delete record.');
+                    }
+                })
+                .catch(err => console.error(err));
         }
 
         function downloadHistoryItem(id) {
