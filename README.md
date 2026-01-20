@@ -15,6 +15,8 @@ The platform provides real-time scanning, persistent scan history, and professio
 -  Persistent scan history
 -  Downloadable PDF security reports
 -  CSV export for analysts
+-  User Access Control & Role Management
+-  Real-time Threat Monitoring
 -  Modern dark-themed UI
 
 

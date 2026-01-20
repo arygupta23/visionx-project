@@ -206,11 +206,11 @@
                                 <h3 class="text-lg font-bold tracking-tight">Threat Distribution</h3>
                                 <p class="text-xs text-slate-500">Global signal analysis over the last 30 days</p>
                             </div>
-                            <select
+                            <select id="timeRangeSelect"
                                 class="bg-slate-100 dark:bg-background-dark border-none rounded text-xs focus:ring-1 focus:ring-primary py-1 pr-8">
-                                <option>Last 30 Days</option>
-                                <option>Last 7 Days</option>
-                                <option>Real-time</option>
+                                <option value="30">Last 30 Days</option>
+                                <option value="7" selected>Last 7 Days</option>
+                                <option value="realtime">Real-time</option>
                             </select>
                         </div>
                         <div class="h-64 w-full relative">
@@ -320,6 +320,8 @@
     </div>
     <script>
         let globalScanData = [];
+        let threatChartInstance = null;
+        let realtimeInterval = null;
 
         function closeExplainability() {
             const modal = document.getElementById('explainability-modal');
@@ -410,138 +412,216 @@
         let currentPage = 1;
         const rowsPerPage = 5;
 
+
+
         document.addEventListener("DOMContentLoaded", function () {
+            // Initial data fetch
+            fetchDataAndInit();
+
+            // Setup Time Range Listener
+            document.getElementById('timeRangeSelect').addEventListener('change', function (e) {
+                handleTimeRangeChange(e.target.value);
+            });
+        });
+
+        function fetchDataAndInit() {
             fetch("/api/history")
                 .then(res => res.json())
                 .then(data => {
-                    globalScanData = data; // Store globally
-
-                    // Sort data by date descending (newest first)
+                    globalScanData = data;
                     globalScanData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-                    // Update main stats
-                    const total = data.length;
-                    const high = data.filter(d => d.risk_level === 'Dangerous').length;
-                    const safe = data.filter(d => d.risk_level === 'Safe').length;
-
-                    document.getElementById('stat-total').textContent = total.toLocaleString();
-                    document.getElementById('stat-high').textContent = high.toLocaleString();
-                    document.getElementById('stat-safe').textContent = safe.toLocaleString();
-
-                    // Avg Risk Score
-                    const avgRisk = total > 0 ? (data.reduce((acc, curr) => acc + (curr.risk_score || 0), 0) / total) : 0;
-                    document.getElementById('stat-avg').textContent = Math.round(avgRisk) + '%';
-
-                    // --- PROCESS DATA FOR CHARTS ---
-
-                    // 1. Threat Distribution (Group by Date)
-                    const last7Days = {};
-                    for (let i = 6; i >= 0; i--) {
-                        const d = new Date();
-                        d.setDate(d.getDate() - i);
-                        last7Days[d.toLocaleDateString()] = 0;
-                    }
-
-                    data.forEach(item => {
-                        const d = new Date(item.created_at).toLocaleDateString();
-                        if (last7Days.hasOwnProperty(d)) {
-                            last7Days[d]++;
-                        }
-                    });
-
-                    // 2. Source Breakdown
-                    const sources = { 'url': 0, 'email': 0, 'file': 0 };
-                    data.forEach(item => {
-                        let type = item.scan_type.toLowerCase();
-                        if (sources[type] !== undefined) sources[type]++;
-                        else sources['url']++; // fallback
-                    });
-
-                    // Update Legend Percentages
-                    if (total > 0) {
-                        document.getElementById('perc-email').textContent = Math.round((sources.email / total) * 100) + '%';
-                        document.getElementById('perc-url').textContent = Math.round((sources.url / total) * 100) + '%';
-                        document.getElementById('perc-file').textContent = Math.round((sources.file / total) * 100) + '%';
-                    }
-
-                    // --- RENDER CHARTS ---
-                    // Threat Chart (Line)
-                    const ctxThreat = document.getElementById('threatChart').getContext('2d');
-                    new Chart(ctxThreat, {
-                        type: 'line',
-                        data: {
-                            labels: Object.keys(last7Days),
-                            datasets: [{
-                                label: 'Scans',
-                                data: Object.values(last7Days),
-                                borderColor: '#19c3e6',
-                                backgroundColor: 'rgba(25, 195, 230, 0.1)',
-                                borderWidth: 2,
-                                fill: true,
-                                tension: 0.4,
-                                pointBackgroundColor: '#111e21',
-                                pointBorderColor: '#19c3e6',
-                                pointBorderWidth: 2
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { display: false }
-                            },
-                            scales: {
-                                x: {
-                                    grid: { color: '#3c4f53', tickColor: 'transparent' },
-                                    ticks: { color: '#94a3b8', font: { family: 'Space Grotesk' } }
-                                },
-                                y: {
-                                    grid: { color: '#3c4f53', tickColor: 'transparent' },
-                                    ticks: { color: '#94a3b8', font: { family: 'Space Grotesk' }, stepSize: 1 }
-                                }
-                            }
-                        }
-                    });
-
-                    // Source Chart (Doughnut)
-                    const ctxSource = document.getElementById('sourceChart').getContext('2d');
-                    new Chart(ctxSource, {
-                        type: 'doughnut',
-                        data: {
-                            labels: ['URL', 'Email', 'File'],
-                            datasets: [{
-                                data: [sources.url, sources.email, sources.file],
-                                backgroundColor: ['#fa5f38', '#19c3e6', '#0bda54'],
-                                borderWidth: 0,
-                                hoverOffset: 4
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            cutout: '75%',
-                            plugins: {
-                                legend: { display: false }
-                            }
-                        }
-                    });
-
-
-                    // --- INITIAL TABLE RENDER ---
+                    updateStats();
+                    renderCharts('7'); // Default to 7 days
                     renderTable(1);
-
-                    // Wire up pagination buttons
-                    document.getElementById('btn-prev').addEventListener('click', () => {
-                        if (currentPage > 1) renderTable(currentPage - 1);
-                    });
-
-                    document.getElementById('btn-next').addEventListener('click', () => {
-                        const totalPages = Math.ceil(globalScanData.length / rowsPerPage);
-                        if (currentPage < totalPages) renderTable(currentPage + 1);
-                    });
+                    setupPagination();
                 })
                 .catch(err => console.error(err));
-        });
+        }
+
+        function updateStats() {
+            const total = globalScanData.length;
+            const high = globalScanData.filter(d => d.risk_level === 'Dangerous').length;
+            const safe = globalScanData.filter(d => d.risk_level === 'Safe').length;
+            const avgRisk = total > 0 ? (globalScanData.reduce((acc, curr) => acc + (curr.risk_score || 0), 0) / total) : 0;
+
+            document.getElementById('stat-total').textContent = total.toLocaleString();
+            document.getElementById('stat-high').textContent = high.toLocaleString();
+            document.getElementById('stat-safe').textContent = safe.toLocaleString();
+            document.getElementById('stat-avg').textContent = Math.round(avgRisk) + '%';
+        }
+
+        function handleTimeRangeChange(range) {
+            // Clear polling if running
+            if (realtimeInterval) {
+                clearInterval(realtimeInterval);
+                realtimeInterval = null;
+            }
+
+            if (range === 'realtime') {
+                updateChartData('realtime');
+                // Poll every 5 seconds
+                realtimeInterval = setInterval(() => {
+                    fetch("/api/history")
+                        .then(res => res.json())
+                        .then(data => {
+                            globalScanData = data;
+                            globalScanData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                            updateStats();
+                            updateChartData('realtime');
+                            // We don't re-render table to avoid jitter, or maybe we should? 
+                            // For now let's just update stats and chart.
+                        });
+                }, 5000);
+            } else {
+                updateChartData(range);
+            }
+        }
+
+        function updateChartData(range) {
+            let labels = [];
+            let counts = [];
+
+            if (range === 'realtime') {
+                // Show activity by Hour for Today
+                const today = new Date().toDateString();
+                const hourlyCounts = new Array(24).fill(0);
+
+                globalScanData.forEach(item => {
+                    const itemDate = new Date(item.created_at);
+                    if (itemDate.toDateString() === today) {
+                        hourlyCounts[itemDate.getHours()]++;
+                    }
+                });
+
+                labels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+                counts = hourlyCounts;
+            } else {
+                // Days logic
+                const days = parseInt(range);
+                const grouped = {};
+
+                for (let i = days - 1; i >= 0; i--) {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    grouped[d.toLocaleDateString()] = 0;
+                }
+
+                globalScanData.forEach(item => {
+                    const d = new Date(item.created_at).toLocaleDateString();
+                    if (grouped.hasOwnProperty(d)) {
+                        grouped[d]++;
+                    }
+                });
+
+                labels = Object.keys(grouped);
+                counts = Object.values(grouped);
+            }
+
+            // Update Chart
+            if (threatChartInstance) {
+                threatChartInstance.data.labels = labels;
+                threatChartInstance.data.datasets[0].data = counts;
+                threatChartInstance.update();
+            }
+        }
+
+        function renderCharts(initialRange) {
+            // 1. Prepare Data for Threat Chart (Default 7 Days)
+            const days = 7;
+            const grouped = {};
+            for (let i = days - 1; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                grouped[d.toLocaleDateString()] = 0;
+            }
+            globalScanData.forEach(item => {
+                const d = new Date(item.created_at).toLocaleDateString();
+                if (grouped.hasOwnProperty(d)) grouped[d]++;
+            });
+
+            const ctxThreat = document.getElementById('threatChart').getContext('2d');
+            threatChartInstance = new Chart(ctxThreat, {
+                type: 'line',
+                data: {
+                    labels: Object.keys(grouped),
+                    datasets: [{
+                        label: 'Scans',
+                        data: Object.values(grouped),
+                        borderColor: '#19c3e6',
+                        backgroundColor: 'rgba(25, 195, 230, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#111e21',
+                        pointBorderColor: '#19c3e6',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            grid: { color: '#3c4f53', tickColor: 'transparent' },
+                            ticks: { color: '#94a3b8', font: { family: 'Space Grotesk' } }
+                        },
+                        y: {
+                            grid: { color: '#3c4f53', tickColor: 'transparent' },
+                            ticks: { color: '#94a3b8', font: { family: 'Space Grotesk' }, stepSize: 1 }
+                        }
+                    }
+                }
+            });
+
+            // 2. Source Breakdown (Static calc from all data)
+            const sources = { 'url': 0, 'email': 0, 'file': 0 };
+            globalScanData.forEach(item => {
+                let type = item.scan_type.toLowerCase();
+                if (sources[type] !== undefined) sources[type]++;
+                else sources['url']++;
+            });
+
+            // Update Legend
+            const total = globalScanData.length;
+            if (total > 0) {
+                document.getElementById('perc-email').textContent = Math.round((sources.email / total) * 100) + '%';
+                document.getElementById('perc-url').textContent = Math.round((sources.url / total) * 100) + '%';
+                document.getElementById('perc-file').textContent = Math.round((sources.file / total) * 100) + '%';
+            }
+
+            const ctxSource = document.getElementById('sourceChart').getContext('2d');
+            new Chart(ctxSource, {
+                type: 'doughnut',
+                data: {
+                    labels: ['URL', 'Email', 'File'],
+                    datasets: [{
+                        data: [sources.url, sources.email, sources.file],
+                        backgroundColor: ['#fa5f38', '#19c3e6', '#0bda54'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function setupPagination() {
+            document.getElementById('btn-prev').addEventListener('click', () => {
+                if (currentPage > 1) renderTable(currentPage - 1);
+            });
+
+            document.getElementById('btn-next').addEventListener('click', () => {
+                const totalPages = Math.ceil(globalScanData.length / rowsPerPage);
+                if (currentPage < totalPages) renderTable(currentPage + 1);
+            });
+        }
 
         function renderTable(page) {
             currentPage = page;
