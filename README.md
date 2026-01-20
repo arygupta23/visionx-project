@@ -96,7 +96,7 @@ VisionX is built using a carefully selected tech stack to ensure **performance, 
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/visionx.git
+git clone https://github.com/arygupta23/visionx-project.git
 
 # Navigate to project directory
 cd visionx
