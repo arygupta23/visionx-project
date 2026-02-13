@@ -107,9 +107,4 @@ pip install flask flask-cors flask-sqlalchemy reportlab
 # Run the application
 python app.py
 
-## Default Credentials
 
-| Field | Value |
-| :--- | :--- |
-| **User ID** | `Admin` |
-| **Password** | `admin123` |
