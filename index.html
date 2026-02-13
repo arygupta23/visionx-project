@@ -1,0 +1,441 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VisionX — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#071011;
+      --panel:#0f1618;
+      --muted:#9aa8ae;
+      --accent:#19c3e6;
+      --accent-2:#0dbfd8;
+      --green:#0bda54;
+      --orange:#facc15;
+      --red:#fa5f38;
+      --glass: rgba(255,255,255,0.02);
+      --glass-2: rgba(255,255,255,0.01);
+      --card-shadow: 0 8px 30px rgba(2,8,10,0.7);
+      --radius:12px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:"Space Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+      background:linear-gradient(180deg,var(--bg), #051014 120%);
+      color:#dff6fb;
+      -webkit-font-smoothing:antialiased;
+      padding:18px;
+    }
+
+    /* App layout */
+    .app {
+      display:grid;
+      grid-template-columns: 240px 1fr;
+      gap:18px;
+      align-items:start;
+      min-height: calc(100vh - 36px);
+    }
+    @media (max-width: 900px){
+      .app { grid-template-columns: 1fr; }
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background:linear-gradient(180deg,var(--panel), rgba(255,255,255,0.01));
+      border-radius:12px;
+      padding:18px;
+      border:1px solid rgba(255,255,255,0.03);
+      box-shadow: var(--card-shadow);
+      height:calc(100vh - 36px);
+      overflow:auto;
+    }
+    .brand{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+    .logo{height:40px;width:40px;border-radius:8px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#051014;font-weight:800;font-family:var(--mono)}
+    .nav {margin-top:8px; display:flex;flex-direction:column; gap:6px}
+    .nav a {color:var(--muted); text-decoration:none; padding:10px 12px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-weight:600; font-size:13px}
+    .nav a.active, .nav a:hover {background:rgba(25,195,230,0.04); color:var(--accent)}
+    .side-foot {margin-top:18px;color:var(--muted);font-size:12px}
+
+    /* Main area */
+    .main {
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    /* Topbar */
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+    .search {
+      display:flex;
+      gap:10px;
+      align-items:center;
+      background:var(--glass);
+      padding:8px 12px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.03);
+      min-width:0;
+      width:100%;
+      max-width:720px;
+    }
+    .search input{ background:transparent;border:none;outline:none;color:inherit;font-size:13px;width:100% }
+    .user {
+      display:flex;
+      gap:10px;
+      align-items:center;
+      color:var(--muted);
+      font-weight:600;
+    }
+    .avatar{height:36px;width:36px;border-radius:999px;background:linear-gradient(180deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:#023133;font-weight:700;font-family:var(--mono)}
+
+    /* Grid / cards */
+    .grid {
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:16px;
+      align-items:start;
+    }
+    @media (max-width:1100px){ .grid { grid-template-columns:repeat(2,1fr);} }
+    @media (max-width:700px){ .grid { grid-template-columns:1fr; } }
+
+    .card {
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+      border-radius:12px;
+      padding:14px;
+      border:1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    }
+    .card h3{margin:0;font-size:13px;color:var(--muted);font-weight:700}
+    .stat {display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+    .stat .value{font-size:22px;font-weight:900;font-family:var(--mono);color:#e6fbff}
+    .tiny{font-size:12px;color:var(--muted)}
+
+    /* Chart area */
+    .chart {
+      height:220px;
+      display:flex;
+      gap:16px;
+      align-items:center;
+      justify-content:center;
+    }
+    .chart svg{width:100%;height:100%}
+
+    /* Activity table */
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th, td{padding:10px 8px;text-align:left;border-bottom:1px dashed rgba(255,255,255,0.02)}
+    th{color:var(--muted);font-weight:700;font-size:12px}
+    td .mono{font-family:var(--mono); color:#eaf6fb; font-weight:700}
+
+    .controls{display:flex;gap:8px;align-items:center}
+
+    /* Footer small */
+    .footer-note{color:var(--muted);font-size:12px;text-align:center;margin-top:6px}
+
+    /* helpers */
+    .badge{padding:6px 8px;border-radius:999px;font-weight:800;font-size:12px}
+    .badge.safe{background:rgba(11,218,84,0.06);color:var(--green)}
+    .badge.suspicious{background:rgba(250,192,40,0.05);color:var(--orange)}
+    .badge.dangerous{background:rgba(250,95,56,0.05);color:var(--red)}
+
+    .muted{color:var(--muted)}
+    .btn{background:linear-gradient(180deg,var(--accent),var(--accent-2));border:none;padding:8px 12px;border-radius:8px;color:#061718;font-weight:800;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" role="navigation" aria-label="Main navigation">
+      <div class="brand">
+        <div class="logo">VX</div>
+        <div>
+          <div style="font-weight:800">VisionX</div>
+          <div style="font-size:12px;color:var(--muted)">Threat Analysis</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a class="active" href="#">Dashboard</a>
+        <a href="#">Threat Intel</a>
+        <a href="#">Scan Archive</a>
+        <a href="#">Integrations</a>
+        <a href="#">Settings</a>
+      </nav>
+
+      <div style="margin-top:18px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">System Status</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="width:10px;height:10px;border-radius:99px;background:var(--green)"></div>
+          <div class="muted" style="font-size:13px">Scan Engine: Online</div>
+        </div>
+      </div>
+
+      <div class="side-foot" style="margin-top:22px">
+        <div style="font-weight:700">Node</div>
+        <div class="muted">US-EAST-1 • Active</div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" role="main">
+      <!-- top bar -->
+      <div class="topbar">
+        <div style="display:flex;gap:12px;flex:1">
+          <div style="min-width:320px" class="search">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35" stroke="#9aa8ae" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="#9aa8ae" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <input placeholder="Search scans, domains or targets..." />
+          </div>
+          <div class="controls" style="margin-left:auto">
+            <button class="btn ghost" id="btn-scan-toggle">Scan Tools</button>
+            <button class="btn">Execute Scan</button>
+          </div>
+        </div>
+
+        <div class="user">
+          <div class="muted" style="font-size:13px">Admin</div>
+          <div class="avatar">AC</div>
+        </div>
+      </div>
+
+      <!-- stats row -->
+      <section class="grid">
+        <div class="card">
+          <h3>Total Scans</h3>
+          <div class="stat">
+            <div>
+              <div class="value" id="stat-total">—</div>
+              <div class="tiny muted">in last 30 days</div>
+            </div>
+            <div style="text-align:right">
+              <div class="tiny muted">Change</div>
+              <div style="font-weight:800;color:var(--green)">+12%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>High Risk Alerts</h3>
+          <div class="stat">
+            <div>
+              <div class="value" id="stat-highcount">—</div>
+              <div class="tiny muted">critical</div>
+            </div>
+            <div style="text-align:right">
+              <div class="tiny muted">Trend</div>
+              <div style="font-weight:800;color:var(--red)">+5.2%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Avg Risk Score</h3>
+          <div class="stat">
+            <div>
+              <div class="value" id="stat-avg">—</div>
+              <div class="tiny muted">score</div>
+            </div>
+            <div style="text-align:right">
+              <div class="tiny muted">MTTD</div>
+              <div style="font-weight:800;color:var(--green)">14.2m</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- charts + activity -->
+      <section style="display:grid;grid-template-columns:2fr 1fr;gap:18px">
+        <!-- main chart card -->
+        <div class="card" style="min-height:320px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h3 style="margin:0">Threat Distribution</h3>
+            <div class="muted tiny">Last 30 days</div>
+          </div>
+          <div class="chart" aria-hidden="true">
+            <!-- simple SVG spark area as placeholder -->
+            <svg viewBox="0 0 800 200" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#19c3e6" stop-opacity="0.35"/>
+                  <stop offset="100%" stop-color="#19c3e6" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="M0,150 C80,120 160,80 240,110 C320,140 400,60 480,90 C560,120 640,80 720,100 L800,110 L800,200 L0,200 Z" fill="url(#g1)"></path>
+              <path d="M0,150 C80,120 160,80 240,110 C320,140 400,60 480,90 C560,120 640,80 720,100 L800,110" stroke="#19c3e6" stroke-width="3" fill="none"></path>
+            </svg>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;justify-content:space-between">
+            <div class="muted">Sources: Email · Web · API</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div class="muted tiny">Requests</div>
+              <div style="font-weight:900;font-family:var(--mono)" id="requests-count">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- small panels -->
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card" style="flex:1">
+            <h3>Scan Sources</h3>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:12px">
+              <svg width="80" height="80" viewBox="0 0 100 100"><circle cx="50" cy="50" r="36" fill="#0d1b1c"/><circle cx="50" cy="50" r="36" stroke="#19c3e6" stroke-dasharray="226" stroke-dashoffset="60" stroke-width="12" fill="none"/></svg>
+              <div>
+                <div style="font-weight:900;font-family:var(--mono);font-size:20px" id="total-requests">4.2k</div>
+                <div class="muted tiny">Requests</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="flex:1">
+            <h3>Live Activity</h3>
+            <div style="margin-top:8px">
+              <div class="muted tiny">Latest scans</div>
+              <ul id="small-activity" style="margin:8px 0;padding:0;list-style:none;max-height:120px;overflow:auto">
+                <!-- filled by JS -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- activity table / archive -->
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <h3 style="margin:0">Scan Archive (Recent)</h3>
+          <div class="controls">
+            <button class="btn ghost" id="btn-refresh">Refresh</button>
+            <button class="btn" id="btn-export">Export</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table id="archive-table" aria-live="polite">
+            <thead>
+              <tr>
+                <th>Scan ID</th>
+                <th>Target</th>
+                <th>Risk</th>
+                <th>Score</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="archive-body">
+              <!-- populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="footer-note">VisionX — demo dashboard • data from local backend</div>
+    </main>
+  </div>
+
+  <script>
+  (function(){
+    const BASE = "http://127.0.0.1:5000";
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+
+    // controls
+    const btnScanToggle = $('#btn-scan-toggle');
+    const btnRefresh = $('#btn-refresh');
+    const archiveBody = $('#archive-body');
+    const smallActivity = $('#small-activity');
+    const statTotal = $('#stat-total'), statHighCount = $('#stat-highcount'), statAvg = $('#stat-avg'), requestsCount = $('#requests-count');
+
+    // helper badge renderer
+    function badgeFor(level){
+      const el = document.createElement('span');
+      el.className = 'badge ' + (String(level||'').toLowerCase() === 'safe' ? 'safe' : (String(level||'').toLowerCase() === 'suspicious' ? 'suspicious' : 'dangerous'));
+      el.textContent = String(level || 'Unknown').toUpperCase();
+      return el;
+    }
+
+    async function apiFetch(endpoint, opts){
+      const r = await fetch(BASE + endpoint, opts);
+      if(!r.ok){
+        let body;
+        try{ body = await r.json(); }catch(e){ body = {error: r.statusText};}
+        throw new Error(body.error || body.message || 'HTTP ' + r.status);
+      }
+      return r.json().then(j=> j && j.result ? j.result : j);
+    }
+
+    async function loadArchive(){
+      btnRefresh.disabled = true;
+      try{
+        const items = await apiFetch('/api/history', {method:'GET'});
+        // summary stats
+        const total = items.length;
+        const avg = Math.round((items.reduce((a,b)=> a + (b.risk_score||0),0)/Math.max(1, items.length)) * 10)/10;
+        const highCount = items.filter(i=> String(i.risk_level).toLowerCase() === 'dangerous').length;
+        statTotal.textContent = total.toLocaleString();
+        statHighCount.textContent = highCount;
+        statAvg.textContent = avg + '%';
+        requestsCount.textContent = total.toLocaleString();
+
+        // recent small activity
+        smallActivity.innerHTML = '';
+        items.slice(0,6).forEach(i=>{
+          const li = document.createElement('li');
+          li.style.padding = '6px 0';
+          li.innerHTML = `<div style="display:flex;justify-content:space-between;gap:12px"><div class="mono">${escape(i.target)}</div><div class="muted tiny">${i.risk_score}</div></div>`;
+          smallActivity.appendChild(li);
+        });
+
+        // archive table
+        archiveBody.innerHTML = '';
+        items.slice(0, 30).forEach(row=>{
+          const tr = document.createElement('tr');
+          const idCell = document.createElement('td');
+          idCell.textContent = 'VX-' + (row.id || '---');
+          const target = document.createElement('td');
+          target.innerHTML = `<div class="mono">${escape(row.target)}</div>`;
+          const risk = document.createElement('td');
+          risk.appendChild(badgeFor(row.risk_level));
+          const score = document.createElement('td');
+          score.textContent = row.risk_score ?? '-';
+          const ts = document.createElement('td');
+          ts.textContent = row.created_at || '';
+          tr.appendChild(idCell); tr.appendChild(target); tr.appendChild(risk); tr.appendChild(score); tr.appendChild(ts);
+          archiveBody.appendChild(tr);
+        });
+
+      }catch(err){
+        console.error('loadArchive', err);
+        archiveBody.innerHTML = `<tr><td colspan="5" class="muted">Unable to load archive — ${err.message}</td></tr>`;
+      }finally{
+        btnRefresh.disabled = false;
+      }
+    }
+
+    function escape(s){
+      if(s==null) return '';
+      return String(s).replace(/[&<>"']/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    // wire controls
+    btnRefresh.addEventListener('click', ()=> loadArchive());
+    btnScanToggle.addEventListener('click', ()=>{
+      // toggle the scan tools panel from the small top area by showing an alert or opening a new window for the existing toolset
+      alert('Scan tools are available in the demo index. Use the Scan Tools panel in the main app when integrated.');
+    });
+
+    // auto-load
+    loadArchive();
+
+    // expose for debugging
+    window.VisionX = { refresh: loadArchive, apiBase: BASE };
+  })();
+  </script>
+</body>
+</html>
